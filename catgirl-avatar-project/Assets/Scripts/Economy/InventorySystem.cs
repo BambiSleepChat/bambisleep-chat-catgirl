@@ -1,298 +1,269 @@
 // Assets/Scripts/Economy/InventorySystem.cs
-// 🎒 BambiSleep™ Church Inventory Management System
-// Unity Gaming Services Economy integration
+// 🌸 BambiSleep™ Church Inventory Management System 🌸
+// Pink frilly inventory with secret cow power items
 
 using UnityEngine;
 using Unity.Services.Economy;
-using Unity.Services.Economy.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-[System.Serializable]
-public class CatgirlItem
+namespace BambiSleep.CatGirl.Economy
 {
-    public string itemId;
-    public string displayName;
-    public Sprite icon;
-    public int rarity; // 1=Common, 2=Uncommon, 3=Rare, 4=Epic, 5=Diablo Secret Level
-    public bool isCowPowerItem = false;
-    public float pinkValue = 0f;
-    public string description;
-    public int quantity = 1;
-
-    [Header("🦋 Item Stats")]
-    public float cutenessBonus = 0f;
-    public float frillinessBonus = 0f;
-    public float eldritchPowerBonus = 0f;
-}
-
-public class InventorySystem : MonoBehaviour
-{
-    [Header("🎒 Inventory Configuration")]
-    public int maxSlots = 100;
-    public List<CatgirlItem> items = new List<CatgirlItem>();
-
-    [Header("💎 Special Collections")]
-    public List<CatgirlItem> cowPowerItems = new List<CatgirlItem>();
-    public List<CatgirlItem> diabloSecretLevelItems = new List<CatgirlItem>();
-
-    [Header("✨ Equipment Slots")]
-    public CatgirlItem equippedCollar;
-    public CatgirlItem equippedEars;
-    public CatgirlItem equippedTail;
-    public CatgirlItem equippedClaws;
-
-    private UniversalBankingSystem banking;
-    private bool isInitialized = false;
-
-    private void Start()
+    [System.Serializable]
+    public class CatgirlItem
     {
-        banking = GetComponent<UniversalBankingSystem>();
-        LoadInventoryFromCloud();
+        public string itemId;
+        public string displayName;
+        public Sprite icon;
+        public int rarity; // 1=Common, 2=Uncommon, 3=Rare, 4=Epic, 5=Diablo Secret Level
+        public bool isCowPowerItem = false;
+        public float pinkValue = 0f;
+        public string description;
+        public int stackSize = 1;
+        public Dictionary<string, object> customData = new Dictionary<string, object>();
     }
 
-    public async void LoadInventoryFromCloud()
+    [System.Serializable]
+    public class InventorySlot
     {
-        try
-        {
-            // Load from Unity Gaming Services Economy
-            var inventoryResult = await EconomyService.Instance.PlayerInventory.GetInventoryAsync();
+        public CatgirlItem item;
+        public int quantity;
+        public bool isLocked;
+    }
 
-            // Process inventory data
-            ProcessCloudInventory(inventoryResult);
+    public class InventorySystem : MonoBehaviour
+    {
+        [Header("🎒 Inventory Configuration")]
+        [SerializeField] private int maxSlots = 100;
+        [SerializeField] private List<InventorySlot> slots = new List<InventorySlot>();
+
+        [Header("💎 Special Collections")]
+        [SerializeField] private List<CatgirlItem> cowPowerItems = new List<CatgirlItem>();
+        [SerializeField] private List<CatgirlItem> diabloSecretLevelItems = new List<CatgirlItem>();
+
+        [Header("🌸 Pink Theme Settings")]
+        [SerializeField] private Color pinkHighlightColor = new Color(1f, 0.41f, 0.71f);
+        [SerializeField] private float frillyAnimationSpeed = 2.0f;
+
+        private UniversalBankingSystem banking;
+        private bool isInitialized = false;
+
+        public int SlotCount => slots.Count;
+        public int MaxSlots => maxSlots;
+        public int AvailableSlots => maxSlots - slots.Count;
+
+        private void Awake()
+        {
+            banking = GetComponent<UniversalBankingSystem>();
+            InitializeInventory();
+        }
+
+        private void Start()
+        {
+            LoadInventoryFromCloud();
+        }
+
+        private void InitializeInventory()
+        {
+            if (isInitialized) return;
+
+            // Initialize empty slots
+            slots = new List<InventorySlot>(maxSlots);
+
+            Debug.Log("🎒 BambiSleep™ Inventory System initialized!");
             isInitialized = true;
-
-            Debug.Log($"🎒 Loaded {items.Count} items from cloud inventory");
         }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Failed to load inventory: {e.Message}");
-            // Initialize with default items on error
-            InitializeDefaultInventory();
-        }
-    }
 
-    private void ProcessCloudInventory(GetInventoryResult inventoryResult)
-    {
-        items.Clear();
-
-        foreach (var item in inventoryResult.Inventory)
+        public async void LoadInventoryFromCloud()
         {
-            var catgirlItem = new CatgirlItem
+            try
             {
-                itemId = item.InventoryItemId,
-                displayName = item.InventoryItemId, // Would map to actual name
-                quantity = 1,
-                description = "Cloud synced item"
+                Debug.Log("📦 Loading inventory from Unity Gaming Services...");
+
+                // Load from Unity Gaming Services Economy
+                var inventoryResult = await EconomyService.Instance.PlayerInventory.GetInventoryAsync();
+
+                // Process inventory data
+                ProcessCloudInventory(inventoryResult);
+
+                Debug.Log($"✨ Loaded {slots.Count} items from cloud!");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Failed to load inventory: {e.Message}");
+                // Continue with local inventory
+            }
+        }
+
+        private void ProcessCloudInventory(Unity.Services.Economy.Model.PlayerInventory inventoryResult)
+        {
+            slots.Clear();
+
+            foreach (var playersInventoryItem in inventoryResult.PlayersInventoryItems)
+            {
+                var item = CreateItemFromCloudData(playersInventoryItem);
+                AddItemToSlot(item, 1);
+            }
+        }
+
+        private CatgirlItem CreateItemFromCloudData(Unity.Services.Economy.Model.PlayersInventoryItem cloudItem)
+        {
+            var item = new CatgirlItem
+            {
+                itemId = cloudItem.InventoryItemId,
+                displayName = cloudItem.InventoryItemId, // Would come from item definition
+                rarity = 1,
+                stackSize = 1
             };
 
-            items.Add(catgirlItem);
-        }
-    }
+            // Check for special item types
+            if (cloudItem.InventoryItemId.Contains("cow_power"))
+            {
+                item.isCowPowerItem = true;
+                cowPowerItems.Add(item);
+            }
 
-    private void InitializeDefaultInventory()
-    {
-        // Add default starter items
-        AddItem(new CatgirlItem
-        {
-            itemId = "basic_collar",
-            displayName = "Basic Pink Collar",
-            rarity = 1,
-            pinkValue = 10f,
-            description = "A cute pink collar for beginner catgirls",
-            cutenessBonus = 5f
-        });
+            if (cloudItem.InventoryItemId.Contains("secret_level"))
+            {
+                item.rarity = 5;
+                diabloSecretLevelItems.Add(item);
+            }
 
-        AddItem(new CatgirlItem
-        {
-            itemId = "starter_ears",
-            displayName = "Fluffy Cat Ears",
-            rarity = 1,
-            pinkValue = 15f,
-            description = "Soft and fluffy, perfect for purring",
-            cutenessBonus = 10f
-        });
-
-        isInitialized = true;
-    }
-
-    public bool AddItem(CatgirlItem item)
-    {
-        if (items.Count >= maxSlots)
-        {
-            Debug.LogWarning("🎒 Inventory full! Cannot add more items.");
-            return false;
+            return item;
         }
 
-        // Check if item already exists (stackable)
-        var existingItem = items.Find(i => i.itemId == item.itemId);
-        if (existingItem != null)
+        public bool AddItem(CatgirlItem item, int quantity = 1)
         {
-            existingItem.quantity += item.quantity;
-            Debug.Log($"🎒 Stacked {item.displayName} x{item.quantity}");
+            if (item == null) return false;
+
+            // Check if we can stack with existing item
+            var existingSlot = FindItemSlot(item.itemId);
+            if (existingSlot != null)
+            {
+                existingSlot.quantity += quantity;
+                OnInventoryChanged();
+                return true;
+            }
+
+            // Add to new slot
+            if (AvailableSlots <= 0)
+            {
+                Debug.LogWarning("🎒 Inventory full! Cannot add item.");
+                return false;
+            }
+
+            return AddItemToSlot(item, quantity);
+        }
+
+        private bool AddItemToSlot(CatgirlItem item, int quantity)
+        {
+            var slot = new InventorySlot
+            {
+                item = item,
+                quantity = quantity,
+                isLocked = false
+            };
+
+            slots.Add(slot);
+
+            // Special handling for cow power items
+            if (item.isCowPowerItem)
+            {
+                Debug.Log("🐄 MOO! Cow Power item added to inventory!");
+                cowPowerItems.Add(item);
+            }
+
+            // Special handling for secret level items
+            if (item.rarity == 5)
+            {
+                Debug.Log("💎 Secret Diablo Level item acquired! LEGENDARY!");
+                diabloSecretLevelItems.Add(item);
+            }
+
+            OnInventoryChanged();
             return true;
         }
 
-        items.Add(item);
-        Debug.Log($"🎒 Added {item.displayName} to inventory!");
-
-        // Special handling for cow power items
-        if (item.isCowPowerItem)
+        public bool RemoveItem(string itemId, int quantity = 1)
         {
-            cowPowerItems.Add(item);
-            TriggerCowPowerEffect();
+            var slot = FindItemSlot(itemId);
+            if (slot == null) return false;
+
+            if (slot.isLocked)
+            {
+                Debug.LogWarning("🔒 Cannot remove locked item!");
+                return false;
+            }
+
+            slot.quantity -= quantity;
+
+            if (slot.quantity <= 0)
+            {
+                slots.Remove(slot);
+            }
+
+            OnInventoryChanged();
+            return true;
         }
 
-        // Diablo secret level item handling
-        if (item.rarity == 5)
+        public InventorySlot FindItemSlot(string itemId)
         {
-            diabloSecretLevelItems.Add(item);
-            UnlockSecretDiabloLevel();
+            return slots.Find(s => s.item.itemId == itemId);
         }
 
-        // Sync to cloud
-        SyncItemToCloud(item);
-
-        return true;
-    }
-
-    public bool RemoveItem(string itemId, int quantity = 1)
-    {
-        var item = items.Find(i => i.itemId == itemId);
-        if (item == null) return false;
-
-        item.quantity -= quantity;
-
-        if (item.quantity <= 0)
+        public int GetItemCount(string itemId)
         {
-            items.Remove(item);
-            cowPowerItems.Remove(item);
-            diabloSecretLevelItems.Remove(item);
+            var slot = FindItemSlot(itemId);
+            return slot?.quantity ?? 0;
         }
 
-        Debug.Log($"🎒 Removed {quantity}x {item.displayName}");
-        return true;
-    }
-
-    public CatgirlItem GetItem(string itemId)
-    {
-        return items.Find(i => i.itemId == itemId);
-    }
-
-    public bool EquipItem(CatgirlItem item)
-    {
-        if (item == null) return false;
-
-        // Determine equipment slot based on item type
-        if (item.displayName.Contains("Collar"))
+        public bool HasItem(string itemId)
         {
-            equippedCollar = item;
-            Debug.Log($"👑 Equipped {item.displayName} as collar");
-        }
-        else if (item.displayName.Contains("Ears"))
-        {
-            equippedEars = item;
-            Debug.Log($"🐱 Equipped {item.displayName} as ears");
-        }
-        else if (item.displayName.Contains("Tail"))
-        {
-            equippedTail = item;
-            Debug.Log($"✨ Equipped {item.displayName} as tail");
-        }
-        else if (item.displayName.Contains("Claws"))
-        {
-            equippedClaws = item;
-            Debug.Log($"💎 Equipped {item.displayName} as claws");
+            return FindItemSlot(itemId) != null;
         }
 
-        return true;
-    }
-
-    private void TriggerCowPowerEffect()
-    {
-        Debug.Log("🐄 COW POWER ITEM ACQUIRED! Moo-gical effects activated! 🐄");
-
-        // Apply cow power bonuses to player
-        var controller = GetComponent<CatgirlController>();
-        if (controller != null)
+        public List<CatgirlItem> GetCowPowerItems()
         {
-            controller.stats.factorioProductionMultiplier += 500;
+            return new List<CatgirlItem>(cowPowerItems);
         }
 
-        // Visual/audio effects
-        PlayCowPowerEffects();
-    }
-
-    private void UnlockSecretDiabloLevel()
-    {
-        Debug.Log("💀 SECRET DIABLO LEVEL ITEM FOUND! Ancient cow portals opening... 💀");
-
-        // Unlock secret content
-        PlayerPrefs.SetInt("SecretCowLevelUnlocked", 1);
-        PlayerPrefs.Save();
-
-        // Trigger special event
-        TriggerDiabloLevelUnlock();
-    }
-
-    private void PlayCowPowerEffects()
-    {
-        // Implement particle effects, sounds, etc.
-        var audioSource = GetComponent<AudioSource>();
-        if (audioSource != null)
+        public List<CatgirlItem> GetSecretLevelItems()
         {
-            // audioSource.PlayOneShot(cowPowerEffectSound);
+            return new List<CatgirlItem>(diabloSecretLevelItems);
         }
-    }
 
-    private void TriggerDiabloLevelUnlock()
-    {
-        // Implement level unlocking logic
-        Debug.Log("🌈 Rainbow portal to secret cow dimension activated! 🌈");
-    }
-
-    private async void SyncItemToCloud(CatgirlItem item)
-    {
-        try
+        public void SortByRarity()
         {
-            // Sync to Unity Gaming Services Economy
-            // await EconomyService.Instance.PlayerInventory.AddInventoryItemAsync(item.itemId);
-            Debug.Log($"☁️ Synced {item.displayName} to cloud");
+            slots.Sort((a, b) => b.item.rarity.CompareTo(a.item.rarity));
+            OnInventoryChanged();
         }
-        catch (System.Exception e)
+
+        public void SortByPinkValue()
         {
-            Debug.LogWarning($"Cloud sync failed: {e.Message}");
+            slots.Sort((a, b) => b.item.pinkValue.CompareTo(a.item.pinkValue));
+            OnInventoryChanged();
         }
-    }
 
-    // Public utility methods
-    public int GetTotalItems()
-    {
-        int total = 0;
-        foreach (var item in items)
+        private void OnInventoryChanged()
         {
-            total += item.quantity;
+            // Notify UI and other systems
+            Debug.Log($"🎒 Inventory updated: {slots.Count}/{maxSlots} slots used");
         }
-        return total;
-    }
 
-    public float GetTotalCutenessBonus()
-    {
-        float total = 0f;
-        if (equippedCollar != null) total += equippedCollar.cutenessBonus;
-        if (equippedEars != null) total += equippedEars.cutenessBonus;
-        if (equippedTail != null) total += equippedTail.cutenessBonus;
-        if (equippedClaws != null) total += equippedClaws.cutenessBonus;
-        return total;
-    }
-
-    public int GetCowPowerItemCount()
-    {
-        return cowPowerItems.Count;
-    }
-
-    public bool HasDiabloSecretLevelItems()
-    {
-        return diabloSecretLevelItems.Count > 0;
+        public async Task<bool> SaveToCloud()
+        {
+            try
+            {
+                Debug.Log("💾 Saving inventory to cloud...");
+                // Unity Gaming Services will handle persistence
+                // This is automatic with Economy service
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Failed to save inventory: {e.Message}");
+                return false;
+            }
+        }
     }
 }

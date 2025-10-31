@@ -52,12 +52,12 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/BambiSleepChat/bambisleep-catgirl-church.git"
+        "url": "https://github.com/BambiSleepChat/bambisleep-chat-catgirl.git"
     },
     "bugs": {
-        "url": "https://github.com/BambiSleepChat/bambisleep-catgirl-church/issues"
+        "url": "https://github.com/BambiSleepChat/bambisleep-chat-catgirl/issues"
     },
-    "homepage": "https://github.com/BambiSleepChat/bambisleep-catgirl-church#readme",
+    "homepage": "https://github.com/BambiSleepChat/bambisleep-chat-catgirl#readme",
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.0.0"
     },
