@@ -1,0 +1,136 @@
+{
+  // VS Code Tasks for Unity Development - BambiSleep™ CatGirl Avatar System
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Unity Project",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "Open Unity Editor to build the project (File > Build Settings > Build)"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean Unity Project",
+      "type": "shell",
+      "command": "rm",
+      "args": [
+        "-rf",
+        "${workspaceFolder}/catgirl-avatar-project/Library",
+        "${workspaceFolder}/catgirl-avatar-project/Temp",
+        "${workspaceFolder}/catgirl-avatar-project/obj"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Regenerate Unity Project Files",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "Open Unity Editor and go to Edit > Preferences > External Tools > Regenerate project files"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Container",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "build",
+        "-t",
+        "ghcr.io/bambisleepchat/bambisleep-chat-catgirl:dev",
+        ".",
+        "--label",
+        "org.opencontainers.image.title=BambiSleep™ CatGirl Avatar",
+        "--label",
+        "org.opencontainers.image.description=Unity 6.2 CatGirl Avatar System with MCP Integration"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "test",
+        "--",
+        "--coverage=100"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Setup MCP Servers",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/setup-mcp.sh"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Check .NET Version",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "--info"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Check Unity Version",
+      "type": "shell",
+      "command": "cat",
+      "args": [
+        "${workspaceFolder}/catgirl-avatar-project/ProjectSettings/ProjectVersion.txt"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

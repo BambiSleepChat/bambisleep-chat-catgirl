@@ -1,0 +1,278 @@
+{
+  // Unity C# Code Snippets for BambiSleep™ CatGirl Avatar System
+
+  "MonoBehaviour Class": {
+    "prefix": "mbc",
+    "body": [
+      "using UnityEngine;",
+      "",
+      "namespace BambiSleep.CatGirl",
+      "{",
+      "    public class ${1:ClassName} : MonoBehaviour",
+      "    {",
+      "        private void Awake()",
+      "        {",
+      "            ${2:// Initialization}",
+      "        }",
+      "",
+      "        private void Start()",
+      "        {",
+      "            ${3:// Start logic}",
+      "        }",
+      "",
+      "        private void Update()",
+      "        {",
+      "            ${4:// Update logic}",
+      "        }",
+      "    }",
+      "}",
+      "$0"
+    ],
+    "description": "Create a MonoBehaviour class with standard Unity lifecycle methods"
+  },
+
+  "NetworkBehaviour Class": {
+    "prefix": "nbc",
+    "body": [
+      "using Unity.Netcode;",
+      "using UnityEngine;",
+      "",
+      "namespace BambiSleep.CatGirl.Networking",
+      "{",
+      "    public class ${1:ClassName} : NetworkBehaviour",
+      "    {",
+      "        public override void OnNetworkSpawn()",
+      "        {",
+      "            base.OnNetworkSpawn();",
+      "            ${2:// Network spawn logic}",
+      "        }",
+      "",
+      "        public override void OnNetworkDespawn()",
+      "        {",
+      "            base.OnNetworkDespawn();",
+      "            ${3:// Network despawn logic}",
+      "        }",
+      "    }",
+      "}",
+      "$0"
+    ],
+    "description": "Create a NetworkBehaviour class for multiplayer"
+  },
+
+  "SerializeField": {
+    "prefix": "sf",
+    "body": [
+      "[SerializeField] private ${1:type} ${2:fieldName};$0"
+    ],
+    "description": "Create a SerializeField for Unity Inspector"
+  },
+
+  "Header Attribute": {
+    "prefix": "hdr",
+    "body": [
+      "[Header(\"${1:Section Name}\")]",
+      "$0"
+    ],
+    "description": "Add a header in Unity Inspector"
+  },
+
+  "Tooltip Attribute": {
+    "prefix": "tt",
+    "body": [
+      "[Tooltip(\"${1:Description}\")]",
+      "$0"
+    ],
+    "description": "Add a tooltip for Unity Inspector field"
+  },
+
+  "RequireComponent": {
+    "prefix": "rc",
+    "body": [
+      "[RequireComponent(typeof(${1:Component}))]",
+      "$0"
+    ],
+    "description": "Require a component on GameObject"
+  },
+
+  "Coroutine": {
+    "prefix": "cor",
+    "body": [
+      "private IEnumerator ${1:CoroutineName}()",
+      "{",
+      "    ${2:// Coroutine logic}",
+      "    yield return ${3:null};",
+      "}",
+      "$0"
+    ],
+    "description": "Create a Unity coroutine"
+  },
+
+  "Start Coroutine": {
+    "prefix": "stc",
+    "body": [
+      "StartCoroutine(${1:CoroutineName}());$0"
+    ],
+    "description": "Start a coroutine"
+  },
+
+  "Debug Log": {
+    "prefix": "dbg",
+    "body": [
+      "Debug.Log($\"${1:Message}: {${2:variable}}\");$0"
+    ],
+    "description": "Debug log with interpolation"
+  },
+
+  "GetComponent": {
+    "prefix": "gc",
+    "body": [
+      "GetComponent<${1:Component}>()$0"
+    ],
+    "description": "Get a component"
+  },
+
+  "TryGetComponent": {
+    "prefix": "tgc",
+    "body": [
+      "if (TryGetComponent<${1:Component}>(out var ${2:component}))",
+      "{",
+      "    ${3:// Use component}",
+      "}",
+      "$0"
+    ],
+    "description": "Try get component safely"
+  },
+
+  "Unity Event Function": {
+    "prefix": "uef",
+    "body": [
+      "private void ${1|Awake,Start,Update,FixedUpdate,LateUpdate,OnEnable,OnDisable,OnDestroy|}()",
+      "{",
+      "    ${2:// Logic}",
+      "}",
+      "$0"
+    ],
+    "description": "Create a Unity event function"
+  },
+
+  "Singleton Pattern": {
+    "prefix": "singleton",
+    "body": [
+      "public class ${1:ClassName} : MonoBehaviour",
+      "{",
+      "    public static ${1:ClassName} Instance { get; private set; }",
+      "",
+      "    private void Awake()",
+      "    {",
+      "        if (Instance != null && Instance != this)",
+      "        {",
+      "            Destroy(gameObject);",
+      "            return;",
+      "        }",
+      "",
+      "        Instance = this;",
+      "        DontDestroyOnLoad(gameObject);",
+      "    }",
+      "}",
+      "$0"
+    ],
+    "description": "Create a singleton MonoBehaviour"
+  },
+
+  "ScriptableObject": {
+    "prefix": "so",
+    "body": [
+      "using UnityEngine;",
+      "",
+      "namespace BambiSleep.CatGirl",
+      "{",
+      "    [CreateAssetMenu(fileName = \"${1:New${2:Name}}\", menuName = \"BambiSleep/CatGirl/${2:Name}\")]",
+      "    public class ${2:Name} : ScriptableObject",
+      "    {",
+      "        ${3:// Fields}",
+      "    }",
+      "}",
+      "$0"
+    ],
+    "description": "Create a ScriptableObject"
+  },
+
+  "Unity Gaming Services": {
+    "prefix": "ugs",
+    "body": [
+      "using Unity.Services.Core;",
+      "using Unity.Services.Authentication;",
+      "using UnityEngine;",
+      "using System.Threading.Tasks;",
+      "",
+      "namespace BambiSleep.CatGirl.Services",
+      "{",
+      "    public class ${1:ServiceManager} : MonoBehaviour",
+      "    {",
+      "        private async void Start()",
+      "        {",
+      "            await InitializeUnityServices();",
+      "        }",
+      "",
+      "        private async Task InitializeUnityServices()",
+      "        {",
+      "            try",
+      "            {",
+      "                await UnityServices.InitializeAsync();",
+      "                await AuthenticationService.Instance.SignInAnonymouslyAsync();",
+      "                Debug.Log(\"Unity Services initialized successfully\");",
+      "            }",
+      "            catch (System.Exception ex)",
+      "            {",
+      "                Debug.LogError($\"Unity Services initialization failed: {ex.Message}\");",
+      "            }",
+      "        }",
+      "    }",
+      "}",
+      "$0"
+    ],
+    "description": "Create Unity Gaming Services initialization"
+  },
+
+  "Network Variable": {
+    "prefix": "nv",
+    "body": [
+      "private NetworkVariable<${1:type}> ${2:variableName} = new NetworkVariable<${1:type}>(${3:defaultValue});$0"
+    ],
+    "description": "Create a NetworkVariable for Netcode"
+  },
+
+  "Server RPC": {
+    "prefix": "srpc",
+    "body": [
+      "[ServerRpc]",
+      "private void ${1:MethodName}ServerRpc(${2:parameters})",
+      "{",
+      "    ${3:// Server-side logic}",
+      "}",
+      "$0"
+    ],
+    "description": "Create a ServerRpc method"
+  },
+
+  "Client RPC": {
+    "prefix": "crpc",
+    "body": [
+      "[ClientRpc]",
+      "private void ${1:MethodName}ClientRpc(${2:parameters})",
+      "{",
+      "    ${3:// Client-side logic}",
+      "}",
+      "$0"
+    ],
+    "description": "Create a ClientRpc method"
+  },
+
+  "BambiSleep Trademark": {
+    "prefix": "bst",
+    "body": [
+      "BambiSleep™$0"
+    ],
+    "description": "Insert BambiSleep™ trademark"
+  }
+}
