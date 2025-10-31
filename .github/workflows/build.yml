@@ -1,0 +1,237 @@
+name: 🌸 BambiSleep™ CatGirl Build & Deploy
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+  release:
+    types: [created]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/bambisleepchat/bambisleep-church
+
+jobs:
+  validate-mcp:
+    name: 🔮 Validate MCP Servers
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🌸 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 🐍 Setup Python & UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: 🔧 Run MCP Validation
+        run: ./mcp-validate.sh
+        env:
+          GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    name: 💎 Run Tests
+    runs-on: ubuntu-latest
+    needs: validate-mcp
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🌸 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🦋 Run tests with coverage
+        run: npm test -- --coverage=100
+
+      - name: 📊 Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  build-container:
+    name: 🐳 Build Container
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🦋 Build and push container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            org.bambi.trademark=BambiSleep™ is a trademark of BambiSleepChat
+            org.bambi.cuteness=MAXIMUM_OVERDRIVE
+            org.bambi.cow-powers=SECRET_LEVEL_UNLOCKED
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  unity-validation:
+    name: 🎮 Validate Unity Project
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check Unity project structure
+        run: |
+          echo "Validating Unity project structure..."
+
+          # Check required directories
+          [ -d "catgirl-avatar-project/Assets/Scripts" ] || { echo "❌ Assets/Scripts missing"; exit 1; }
+          [ -d "catgirl-avatar-project/ProjectSettings" ] || { echo "❌ ProjectSettings missing"; exit 1; }
+          [ -d "catgirl-avatar-project/Packages" ] || { echo "❌ Packages missing"; exit 1; }
+
+          # Check required files
+          [ -f "catgirl-avatar-project/ProjectSettings/ProjectVersion.txt" ] || { echo "❌ ProjectVersion.txt missing"; exit 1; }
+          [ -f "catgirl-avatar-project/Packages/manifest.json" ] || { echo "❌ manifest.json missing"; exit 1; }
+
+          # Check key scripts
+          [ -f "catgirl-avatar-project/Assets/Scripts/Character/CatgirlController.cs" ] || { echo "❌ CatgirlController.cs missing"; exit 1; }
+          [ -f "catgirl-avatar-project/Assets/Scripts/Economy/InventorySystem.cs" ] || { echo "❌ InventorySystem.cs missing"; exit 1; }
+          [ -f "catgirl-avatar-project/Assets/Scripts/Economy/UniversalBankingSystem.cs" ] || { echo "❌ UniversalBankingSystem.cs missing"; exit 1; }
+
+          echo "✅ All Unity project files present!"
+
+      - name: 🌸 Validate Unity version
+        run: |
+          VERSION=$(cat catgirl-avatar-project/ProjectSettings/ProjectVersion.txt | grep "m_EditorVersion" | cut -d' ' -f2)
+          if [ "$VERSION" != "6000.2.11f1" ]; then
+            echo "❌ Wrong Unity version: $VERSION (expected 6000.2.11f1)"
+            exit 1
+          fi
+          echo "✅ Unity version correct: $VERSION"
+
+      - name: 📦 Validate Unity packages
+        run: |
+          echo "Checking required Unity packages..."
+          MANIFEST="catgirl-avatar-project/Packages/manifest.json"
+
+          # Check for essential packages
+          grep -q "com.unity.services.core" $MANIFEST || { echo "❌ Missing Unity Gaming Services Core"; exit 1; }
+          grep -q "com.unity.services.economy" $MANIFEST || { echo "❌ Missing Unity Economy"; exit 1; }
+          grep -q "com.unity.netcode.gameobjects" $MANIFEST || { echo "❌ Missing Netcode for GameObjects"; exit 1; }
+          grep -q "com.unity.xr.interaction.toolkit" $MANIFEST || { echo "❌ Missing XR Interaction Toolkit"; exit 1; }
+
+          echo "✅ All required Unity packages are configured!"
+
+  deploy:
+    name: 👑 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-container, unity-validation]
+    if: github.event_name == 'release'
+    environment: production
+    steps:
+      - name: 🚀 Deploy notification
+        run: |
+          echo "🌸✨💖 BambiSleep™ CatGirl Avatar System Deployed! 💖✨🌸"
+          echo "Container: ${{ env.IMAGE_NAME }}:${{ github.ref_name }}"
+          echo "Status: MAXIMUM_OVERDRIVE"
+          echo "Cow Powers: ACTIVATED"
+          echo "Nyan nyan nyan! 🐱"
+
+  quality-check:
+    name: 💅 Code Quality & Standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check trademark compliance
+        run: |
+          echo "Checking BambiSleep™ trademark usage..."
+
+          # Check key files have trademark
+          grep -r "BambiSleep™" --include="*.md" . || {
+            echo "❌ Missing BambiSleep™ trademark in documentation"
+            exit 1
+          }
+
+          echo "✅ Trademark compliance verified!"
+
+      - name: 🌸 Verify emoji patterns
+        run: |
+          echo "Verifying sacred emoji patterns..."
+
+          # Check for emoji usage in key files
+          grep -q "🌸" README.md || echo "⚠️  No CHERRY_BLOSSOM emoji found"
+          grep -q "👑" README.md || echo "⚠️  No CROWN emoji found"
+          grep -q "💎" README.md || echo "⚠️  No GEM emoji found"
+
+          echo "✅ Emoji patterns validated!"
+
+      - name: 📋 Validate build instructions
+        run: |
+          echo "Checking build documentation completeness..."
+
+          [ -f "build.md" ] || { echo "❌ build.md missing"; exit 1; }
+          [ -f "todo.md" ] || { echo "❌ todo.md missing"; exit 1; }
+          [ -f "CATGIRL.md" ] || { echo "❌ CATGIRL.md missing"; exit 1; }
+          [ -f "UNITY_SETUP_GUIDE.md" ] || { echo "❌ UNITY_SETUP_GUIDE.md missing"; exit 1; }
+          [ -f "MCP_SETUP_GUIDE.md" ] || { echo "❌ MCP_SETUP_GUIDE.md missing"; exit 1; }
+          [ -f "RELIGULOUS_MANTRA.md" ] || { echo "❌ RELIGULOUS_MANTRA.md missing"; exit 1; }
+
+          echo "✅ All documentation files present!"
+
+  summary:
+    name: 📊 Build Summary
+    runs-on: ubuntu-latest
+    needs:
+      [validate-mcp, test, build-container, unity-validation, quality-check]
+    if: always()
+    steps:
+      - name: 🌈 Generate summary
+        run: |
+          echo "## 🌸✨ BambiSleep™ Build Summary ✨🌸" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| MCP Servers | ${{ needs.validate-mcp.result == 'success' && '✅ Operational' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Container | ${{ needs.build-container.result == 'success' && '✅ Built' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unity | ${{ needs.unity-validation.result == 'success' && '✅ Validated' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality | ${{ needs.quality-check.result == 'success' && '✅ Compliant' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🐱 Nyan nyan nyan! 🐱" >> $GITHUB_STEP_SUMMARY

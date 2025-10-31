@@ -1,0 +1,83 @@
+{
+    "cSpell.words": [
+        "AIGF",
+        "Addressables",
+        "BambiSleep",
+        "CATGIRL",
+        "COPPA",
+        "Catgirl",
+        "Behaviour",
+        "RELIGULOUS",
+        "addressables",
+        "aigf",
+        "bambisleep",
+        "bambisleepchat",
+        "catgirl",
+        "cinemachine",
+        "gameobjects",
+        "modelcontextprotocol",
+        "opencontainers",
+        "overcomplicate"
+    ],
+    "unity.enableExtensions": true,
+    "unity.projectPath": "/mnt/f/bambisleep-chat-catgirl/catgirl-avatar-project",
+    "mcp.servers": {
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "/mnt/f/bambisleep-chat-catgirl"
+            ]
+        },
+        "git": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-git",
+                "--repository",
+                "/mnt/f/bambisleep-chat-catgirl"
+            ]
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ]
+        },
+        "memory": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-memory"
+            ]
+        },
+        "sequential-thinking": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-sequential-thinking"
+            ]
+        },
+        "everything": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-everything"
+            ]
+        },
+        "brave-search": {
+            "command": "uvx",
+            "args": [
+                "mcp-server-brave-search"
+            ]
+        },
+        "postgres": {
+            "command": "uvx",
+            "args": [
+                "mcp-server-postgres"
+            ]
+        }
+    }
+}
