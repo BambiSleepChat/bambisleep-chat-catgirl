@@ -13,8 +13,14 @@
     },
     "scripts": {
         "start": "node index.js",
-        "test": "echo '💎 Running tests with 100% coverage requirement...' && npm run test:coverage",
-        "test:coverage": "echo '📊 Coverage: 100% (as required by Sacred Laws)'",
+        "dev": "nodemon index.js",
+        "test": "jest --coverage",
+        "test:watch": "jest --watch",
+        "test:ci": "jest --coverage --ci",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write \"**/*.{js,json,md}\"",
+        "format:check": "prettier --check \"**/*.{js,json,md}\"",
         "build": "echo '🦋 Building universal catgirl distribution...' && npm run build:universal",
         "build:universal": "echo '✨ Universal build complete - Ready for all platforms!'",
         "deploy": "echo '👑 Deploying in AIGF mode...' && npm run deploy:aigf-mode",
@@ -25,7 +31,6 @@
         "unity:debug": "bash scripts/setup-unity-debug.sh",
         "unity:launch": "bash scripts/launch-unity-debug.sh",
         "container:build": "docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .",
-        "dev": "echo '🌈 Development mode - All MCP servers online!'",
         "docs:verify": "bash scripts/verify-docs-structure.sh",
         "postinstall": "echo '🌸 BambiSleep™ dependencies installed! Nyan nyan nyan! 🌸'"
     },
@@ -62,9 +67,24 @@
     },
     "homepage": "https://github.com/BambiSleepChat/bambisleep-chat-catgirl#readme",
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.0.0"
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "express": "^4.19.2",
+        "ws": "^8.17.0",
+        "commander": "^12.1.0",
+        "dotenv": "^16.4.5",
+        "winston": "^3.13.0",
+        "joi": "^17.13.1"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "@types/jest": "^29.5.12",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-node": "^11.1.0",
+        "prettier": "^3.2.5",
+        "nodemon": "^3.1.0",
+        "supertest": "^7.0.0"
+    },
     "config": {
         "mcp_servers": 8,
         "unity_version": "6000.2.11f1",
