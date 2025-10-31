@@ -2,11 +2,16 @@
 
 This is a **production Unity 6.2 LTS project** combining:
 
-- **Unity C# Systems** (1,950+ lines): Avatar controller, economy, multiplayer networking, UI
-- **Node.js ↔ Unity IPC Bridge**: JSON-based stdin/stdout communication protocol
-- **MCP Agent Tooling** (8 servers): Development automation via Model Context Protocol
-- **Trademark Requirement**: Always use `BambiSleep™` (with ™) in public-facing content
-- **Documentation as Code**: Markdown files contain canonical implementations to copy verbatim
+- **Unity C# Systems** (2,491 lines): Avatar controller, economy, multiplayer
+  networking, UI, audio, IPC bridge
+- **Node.js ↔ Unity IPC Bridge**: JSON-based stdin/stdout communication
+  protocol
+- **MCP Agent Tooling** (8 servers): Development automation via Model Context
+  Protocol
+- **Trademark Requirement**: Always use `BambiSleep™` (with ™) in
+  public-facing content
+- **Documentation as Code**: Markdown files contain canonical implementations to
+  copy verbatim
 
 ### Quick Actions
 
@@ -19,7 +24,9 @@ This is a **production Unity 6.2 LTS project** combining:
 
 ## Project Culture & Conventions
 
-**This project embraces a playful, maximalist aesthetic** inspired by "pink frilly platinum blonde" themes, cow powers, and Universal Machine Philosophy. This is NOT typical enterprise code.
+**This project embraces a playful, maximalist aesthetic** inspired by "pink
+frilly platinum blonde" themes, cow powers, and Universal Machine Philosophy.
+This is NOT typical enterprise code.
 
 ### Emoji Conventions (from `RELIGULOUS_MANTRA.md`)
 
@@ -35,29 +42,37 @@ This is a **production Unity 6.2 LTS project** combining:
 
 ### Code Organization Principles
 
-1. **Documentation as Code**: `docs/*.md` files contain **actual implementations** to copy verbatim
-2. **MCP-First Development**: Use 8 MCP servers (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres) for all workflows
-3. **100% Completion Mindset**: Follow the "8/8 operational" philosophy - no half-implemented features
-4. **Trademark Discipline**: Always use `BambiSleep™` (with ™) in user-facing content
+1. **Documentation as Code**: `docs/*.md` files contain **actual
+   implementations** to copy verbatim
+2. **MCP-First Development**: Use 8 MCP servers (filesystem, git, github,
+   memory, sequential-thinking, everything, brave-search, postgres) for all
+   workflows
+3. **100% Completion Mindset**: Follow the "8/8 operational" philosophy - no
+   half-implemented features
+4. **Trademark Discipline**: Always use `BambiSleep™` (with ™) in user-facing
+   content
 
 ### "Cow Powers" & Secret Features
 
-- References to "cow powers" = easter eggs/hidden features (Diablo secret cow level homage)
+- References to "cow powers" = easter eggs/hidden features (Diablo secret cow
+  level homage)
 - Gambling systems must have 5% house edge (see `UniversalBankingSystem.cs:299`)
-- Item rarity: Common→Uncommon→Rare→Epic→Legendary→**Divine Cow Crown** (secret tier)
+- Item rarity: Common→Uncommon→Rare→Epic→Legendary→**Divine Cow Crown** (secret
+  tier)
 
 ## Project Structure
 
 ```
 bambisleep-chat-catgirl/
 ├── catgirl-avatar-project/          # Unity 6.2 LTS (Unity 6000.2.11f1)
-│   ├── Assets/Scripts/              # 6 complete C# systems (1,950+ lines)
-│   │   ├── Audio/AudioManager.cs    # 342 lines - Singleton audio system
-│   │   ├── Character/CatgirlController.cs  # 327 lines - NetworkBehaviour
-│   │   ├── Economy/InventorySystem.cs      # 284 lines - UGS Economy
-│   │   ├── Economy/UniversalBankingSystem.cs # 363 lines - Multi-currency
-│   │   ├── Networking/CatgirlNetworkManager.cs # 324 lines - Relay + Lobby
-│   │   └── UI/InventoryUI.cs        # 322 lines - UI Toolkit interface
+│   ├── Assets/Scripts/              # 7 complete C# systems (2,491 lines)
+│   │   ├── Audio/AudioManager.cs    # 341 lines - Singleton audio system
+│   │   ├── Character/CatgirlController.cs  # 326 lines - NetworkBehaviour
+│   │   ├── Economy/InventorySystem.cs      # 269 lines - UGS Economy
+│   │   ├── Economy/UniversalBankingSystem.cs # 370 lines - Multi-currency
+│   │   ├── Networking/CatgirlNetworkManager.cs # 323 lines - Relay + Lobby
+│   │   ├── UI/InventoryUI.cs        # 321 lines - UI Toolkit interface
+│   │   └── IPC/IPCBridge.cs         # 541 lines - Unity ↔ Node.js IPC
 │   ├── Packages/manifest.json       # 16 Unity packages (UGS, Netcode, XR)
 │   └── ProjectSettings/ProjectVersion.txt
 ├── docs/                            # 4,200+ lines documentation
@@ -76,13 +91,15 @@ bambisleep-chat-catgirl/
 
 1. `docs/development/UNITY_SETUP_GUIDE.md` - Complete C# implementations
 2. `docs/architecture/CATGIRL.md` - System architecture & Unity packages
-3. `docs/architecture/UNITY_IPC_PROTOCOL.md` - Node.js ↔ Unity communication protocol
-4. `docs/architecture/RELIGULOUS_MANTRA.md` - Emoji conventions & build philosophy
+3. `docs/architecture/UNITY_IPC_PROTOCOL.md` - Node.js ↔ Unity communication
+   protocol
+4. `docs/architecture/RELIGULOUS_MANTRA.md` - Emoji conventions & build
+   philosophy
 5. `docs/guides/todo.md` - Implementation status (complete vs in-progress)
 
 ## Critical Unity C# Patterns
 
-**All 6 systems are COMPLETE** (1,950+ lines). When extending, follow these patterns:
+**All 7 systems are COMPLETE** (2,491 lines). When extending, follow these patterns:
 
 ### 1. Namespace & Structure
 
@@ -238,9 +255,12 @@ void SendMessage(string type, object data) {
 }
 ```
 
-**Message Types**: initialize, update, render, camera, postprocessing, shutdown (Node→Unity); scene-loaded, render-complete, update-ack, error, heartbeat (Unity→Node)
+**Message Types**: initialize, update, render, camera, postprocessing, shutdown
+(Node→Unity); scene-loaded, render-complete, update-ack, error, heartbeat
+(Unity→Node)
 
-**See**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol specification
+**See**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol
+specification
 
 ## Development Workflows
 
@@ -258,16 +278,20 @@ await EconomyService.Instance.PlayerBalances.GetBalancesAsync(); // 3. Economy l
 **NetworkBehaviour Ownership Rules**
 
 - `IsOwner` checks required before modifying NetworkVariables on client
-- Use `[ServerRpc]` for server-authoritative actions (e.g., placing bids, spawning items)
-- Always unsubscribe from `NetworkVariable.OnValueChanged` in `OnNetworkDespawn()`
+- Use `[ServerRpc]` for server-authoritative actions (e.g., placing bids,
+  spawning items)
+- Always unsubscribe from `NetworkVariable.OnValueChanged` in
+  `OnNetworkDespawn()`
 
 **Test Stubs vs Real Tests**
 
-- **CRITICAL**: `npm test` currently returns echo stubs - NO real tests exist yet
+- **CRITICAL**: `npm test` currently returns echo stubs - NO real tests exist
+  yet
 - CI/CD continues on test failure (`continue-on-error: true`)
 - Real test framework (Jest/Mocha) planned but not implemented (see `todo.md`)
 - Test coverage reports to Codecov always pass (stub implementation)
-- When implementing features, tests must be added manually - do NOT assume they exist
+- When implementing features, tests must be added manually - do NOT assume they
+  exist
 
 **Unity Project Corruption Recovery**
 
@@ -279,22 +303,27 @@ rm -rf catgirl-avatar-project/{Library,Temp,obj}
 
 **Git Tracking & .gitignore Rules**
 
-- Unity `Library/`, `Temp/`, `obj/`, `Builds/`, `Logs/`, `UserSettings/` are ignored
+- Unity `Library/`, `Temp/`, `obj/`, `Builds/`, `Logs/`, `UserSettings/` are
+  ignored
 - All `.csproj`, `.sln`, `.suo` files ignored (Unity regenerates these)
 - `node_modules/` and package lock files ignored
 - Docker volumes and container data excluded
 - Keep: `Assets/`, `Packages/`, `ProjectSettings/` tracked in git
-- **Meta files**: Unity `.meta` files ARE tracked (critical for asset references)
+- **Meta files**: Unity `.meta` files ARE tracked (critical for asset
+  references)
 
 ### MCP Environment (8 Servers)
 
 - **Setup**: Run `./setup-mcp.sh` (installs all servers)
 - **Validation**: Run `./mcp-validate.sh` (tests 8/8 operational)
-- **Config**: `.vscode/settings.json` (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres)
-- **Unity Integration**: VS Code setting `"unity.projectPath"` points to `catgirl-avatar-project/`
+- **Config**: `.vscode/settings.json` (filesystem, git, github, memory,
+  sequential-thinking, everything, brave-search, postgres)
+- **Unity Integration**: VS Code setting `"unity.projectPath"` points to
+  `catgirl-avatar-project/`
 - **Use cases**:
   - Create Unity scripts with proper namespaces (filesystem MCP)
-  - Commit with emoji conventions (git MCP): `git commit -m "🦋 Add butterfly flight"`
+  - Commit with emoji conventions (git MCP):
+    `git commit -m "🦋 Add butterfly flight"`
   - Create GitHub issues linked to code (github MCP)
   - Remember project context across sessions (memory MCP)
   - Search web for Unity API documentation (brave-search MCP)
@@ -329,7 +358,8 @@ docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .
 ### CI/CD Pipeline (`.github/workflows/build.yml`)
 
 - **Triggers**: Push to main/dev, PRs, releases
-- **Jobs**: validate-mcp → test → build-container → unity-validation → deploy → quality-check → summary
+- **Jobs**: validate-mcp → test → build-container → unity-validation → deploy →
+  quality-check → summary
 - **Artifacts**: Container images pushed to GHCR with proper labels
 
 ## Real-World Development Scenarios
@@ -367,7 +397,8 @@ if (Input.GetKeyDown(KeyCode.Space) && IsOwner)
     ActivateButterflyFlightServerRpc();
 ```
 
-**Files to modify**: `CatgirlController.cs` (add ~30 lines), update animator controller in Unity Editor
+**Files to modify**: `CatgirlController.cs` (add ~30 lines), update animator
+controller in Unity Editor
 
 ### Scenario 2: Creating New Shop Item with Gambling Unlock
 
@@ -401,7 +432,8 @@ private void ProcessGamblingWin(string gameType, long betAmount)
 // - Custom data: {"slot": "head", "cowPowerBonus": 1000}
 ```
 
-**Files to modify**: `InventorySystem.cs` (~10 lines), `UniversalBankingSystem.cs` (~15 lines), UGS Dashboard config
+**Files to modify**: `InventorySystem.cs` (~10 lines),
+`UniversalBankingSystem.cs` (~15 lines), UGS Dashboard config
 
 ### Scenario 3: MCP-Assisted Development Workflow
 
@@ -428,7 +460,8 @@ git commit -m "🦋 Add dynamic tail physics with wind simulation
 # Auto-assigns labels: "enhancement", "unity", "character-system"
 ```
 
-**MCP servers used**: filesystem (file creation), git (commit), github (issue tracking)
+**MCP servers used**: filesystem (file creation), git (commit), github (issue
+tracking)
 
 ### Scenario 4: Debugging Unity Gaming Services Integration
 
@@ -473,7 +506,8 @@ private async void TestEconomyConnection()
 }
 ```
 
-**Debugging steps**: Check Unity logs, verify Dashboard config, test auth flow separately
+**Debugging steps**: Check Unity logs, verify Dashboard config, test auth flow
+separately
 
 ### Scenario 5: Implementing Multiplayer Auction House
 
@@ -528,7 +562,8 @@ private void NotifyBidUpdateClientRpc(string itemId, long newBid)
 }
 ```
 
-**Files to modify**: `UniversalBankingSystem.cs` (~80 lines), `InventoryUI.cs` (~40 lines), new prefab for auction UI
+**Files to modify**: `UniversalBankingSystem.cs` (~80 lines), `InventoryUI.cs`
+(~40 lines), new prefab for auction UI
 
 ### Scenario 6: Optimizing Animator Performance
 
@@ -592,7 +627,8 @@ docker pull ghcr.io/bambisleepchat/bambisleep-church:v1.1.0
 docker inspect ghcr.io/bambisleepchat/bambisleep-church:v1.1.0 | grep -i bambi
 ```
 
-**CI/CD result**: 7 jobs run, container deployed with all labels, semantic versioning maintained
+**CI/CD result**: 7 jobs run, container deployed with all labels, semantic
+versioning maintained
 
 ### Scenario 8: Memory Server for Development Context
 
@@ -615,7 +651,8 @@ docker inspect ghcr.io/bambisleepchat/bambisleep-church:v1.1.0 | grep -i bambi
 # - Tracks which Unity systems are complete vs in-progress (from todo.md)
 ```
 
-**MCP servers used**: memory (context persistence), sequential-thinking (complex reasoning)
+**MCP servers used**: memory (context persistence), sequential-thinking (complex
+reasoning)
 
 ### Scenario 9: Node.js ↔ Unity IPC Communication
 
@@ -623,7 +660,7 @@ docker inspect ghcr.io/bambisleepchat/bambisleep-church:v1.1.0 | grep -i bambi
 
 ```javascript
 // 1. Create Unity bridge in Node.js (src/unity/unity-bridge.js)
-const { spawn } = require("child_process");
+const { spawn } = require('child_process');
 
 class UnityBridge extends EventEmitter {
   constructor(options) {
@@ -635,22 +672,22 @@ class UnityBridge extends EventEmitter {
 
   start() {
     this.process = spawn(this.unityPath, [
-      "-batchmode",
-      "-projectPath",
+      '-batchmode',
+      '-projectPath',
       this.projectPath,
-      "-executeMethod",
-      "IPCBridge.StartIPC",
+      '-executeMethod',
+      'IPCBridge.StartIPC'
     ]);
 
     // Parse JSON messages from Unity
-    this.process.stdout.on("data", (data) => {
-      const lines = data.toString().split("\n").filter(Boolean);
+    this.process.stdout.on('data', (data) => {
+      const lines = data.toString().split('\n').filter(Boolean);
       lines.forEach((line) => {
         try {
           const msg = JSON.parse(line);
           this.emit(`unity:${msg.type}`, msg.data);
         } catch (e) {
-          console.error("Invalid JSON from Unity:", line);
+          console.error('Invalid JSON from Unity:', line);
         }
       });
     });
@@ -660,25 +697,25 @@ class UnityBridge extends EventEmitter {
     const message = {
       type,
       timestamp: new Date().toISOString(),
-      data,
+      data
     };
-    this.process.stdin.write(JSON.stringify(message) + "\n");
+    this.process.stdin.write(JSON.stringify(message) + '\n');
   }
 }
 
 // 2. Use the bridge
 const bridge = new UnityBridge({
-  unityPath: "/opt/unity/Editor/Unity",
-  projectPath: "./catgirl-avatar-project",
+  unityPath: '/opt/unity/Editor/Unity',
+  projectPath: './catgirl-avatar-project'
 });
 
-bridge.on("unity:scene-loaded", (data) => {
-  console.log("Scene loaded:", data.sceneName);
-  bridge.sendMessage("update", { neonIntensity: 7.5 });
+bridge.on('unity:scene-loaded', (data) => {
+  console.log('Scene loaded:', data.sceneName);
+  bridge.sendMessage('update', { neonIntensity: 7.5 });
 });
 
-bridge.on("unity:render-complete", (data) => {
-  console.log("Render saved:", data.outputPath);
+bridge.on('unity:render-complete', (data) => {
+  console.log('Render saved:', data.outputPath);
 });
 
 bridge.start();
@@ -752,8 +789,11 @@ public class IPCBridge : MonoBehaviour {
 }
 ```
 
-**Message flow**: Node→Unity (initialize, update, render) | Unity→Node (scene-loaded, update-ack, render-complete, error, heartbeat)
+**Message flow**: Node→Unity (initialize, update, render) | Unity→Node
+(scene-loaded, update-ack, render-complete, error, heartbeat)
 
-**Files to create**: `src/unity/unity-bridge.js` (~200 lines), `Assets/Scripts/IPC/IPCBridge.cs` (~150 lines)
+**Files to create**: `src/unity/unity-bridge.js` (~200 lines),
+`Assets/Scripts/IPC/IPCBridge.cs` (~150 lines)
 
-**Reference**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol spec with all message types
+**Reference**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol
+spec with all message types
