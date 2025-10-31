@@ -5,20 +5,78 @@ This is a **production Unity 6.2 LTS project** combining:
 - **Unity C# Systems** (2,491 lines): Avatar controller, economy, multiplayer
   networking, UI, audio, IPC bridge
 - **Node.js ↔ Unity IPC Bridge**: JSON-based stdin/stdout communication
-  protocol
-- **MCP Agent Tooling** (10 servers): Development automation via Model Context
-  Protocol
+  protocol (see `src/unity/unity-bridge.js`)
+- **MCP Agent Tooling** (8 core servers + 6 optional): Development automation
+  via Model Context Protocol
+- **Jest Test Suite**: Real test assertions in `__tests__/` (not stubs) -
+  coverage target 80%
 - **Trademark Requirement**: Always use `BambiSleep™` (with ™) in
   public-facing content
 - **Documentation as Code**: Markdown files contain canonical implementations to
   copy verbatim
 
-### Quick Actions
+### Quick Start: 5-Minute Productivity Guide
+
+**Workflow Decision Tree** (choose your path):
+
+```
+Your Task → Quick Guide
+├─ Extend Unity C# systems
+│  └─ 1. Read existing script in catgirl-avatar-project/Assets/Scripts/{domain}/
+│     2. Copy namespace pattern: BambiSleep.CatGirl.{Domain}
+│     3. Follow NetworkBehaviour lifecycle if multiplayer
+│     4. Add emoji headers: [Header("🌸 Section Name")]
+│     5. Run "Check Unity Version" task to verify Unity 6000.2.11f1
+│
+├─ Add Node.js feature (IPC bridge)
+│  └─ 1. Review src/unity/unity-bridge.js for IPC patterns
+│     2. Add corresponding test in __tests__/unity-bridge.test.js
+│     3. Follow EventEmitter pattern for async communication
+│     4. Run `npm test` to verify 80% coverage maintained
+│
+├─ Debug Unity Gaming Services
+│  └─ 1. Check docs/DEBUGGING.md for Unity-specific troubleshooting
+│     2. Verify UGS initialization order: UnityServices → Auth → Economy
+│     3. Check Unity Dashboard for project ID and Economy config
+│     4. Use [ContextMenu] test methods for isolated debugging
+│
+├─ Use MCP servers for automation
+│  └─ 1. Run ./scripts/mcp-validate.sh to verify 8/8 servers operational
+│     2. Use filesystem MCP for creating Unity scripts with proper structure
+│     3. Use git MCP for commits with emoji conventions (🦋 for features)
+│     4. Use github MCP for creating issues linked to specific code lines
+│
+└─ Build/Deploy changes
+   └─ 1. Update package.json version for semantic versioning
+      2. Run `npm test` to ensure tests pass
+      3. Use VS Code task "Build Container" for Docker builds
+      4. CI/CD auto-deploys on git tag: v{major}.{minor}.{patch}
+```
+
+**For extending Unity systems** (most common task):
+
+1. Read the existing script FIRST:
+   `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs`
+2. Follow these exact patterns: proper namespace, emoji headers, NetworkBehaviour
+   lifecycle
+3. Test with VS Code task "Check Unity Version" to verify Unity 6000.2.11f1
+4. Run `npm test` to ensure Node.js integration still works
+
+**For debugging issues:**
+
+- Unity errors: `docs/DEBUGGING.md` (522 lines with Unity-specific troubleshooting)
+- UGS auth failures: Check initialization order (UnityServices → Auth →
+  Economy)
+- Test failures: Review `__tests__/unity-bridge.test.js` for patterns
+- MCP issues: Run `./scripts/mcp-validate.sh` (tests 8/8 operational)
+
+### Quick Actions Reference
 
 | Task                     | Command/Location                                                                                |
 | ------------------------ | ----------------------------------------------------------------------------------------------- |
 | **Extend Unity systems** | Read `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs` FIRST, follow its patterns |
-| **MCP setup**            | Run `./setup-mcp.sh`, test with `./mcp-validate.sh`                                             |
+| **Run tests**            | `npm test` (Jest with 80% coverage target) or `npm run test:watch`                              |
+| **MCP setup**            | Run `./scripts/setup-mcp.sh`, test with `./scripts/mcp-validate.sh`                             |
 | **Build/Deploy**         | VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts                                 |
 | **Architecture guide**   | `docs/development/UNITY_SETUP_GUIDE.md` (858 lines with actual C# code)                         |
 | **Debug guide**          | `docs/DEBUGGING.md` (522 lines - breakpoints, shortcuts, troubleshooting)                       |
@@ -45,9 +103,9 @@ This is NOT typical enterprise code.
 
 1. **Documentation as Code**: `docs/*.md` files contain **actual
    implementations** to copy verbatim
-2. **MCP-First Development**: Use 10 MCP servers (filesystem, git, github,
-   memory, sequential-thinking, everything, brave-search, postgres, stripe,
-   fetch) for all workflows
+2. **MCP-First Development**: Use 8 MCP servers (filesystem, git, github,
+   memory, sequential-thinking, everything, brave-search, postgres) for all
+   workflows. Validate with `./scripts/mcp-validate.sh` (tests 8/8 operational)
 3. **100% Completion Mindset**: Follow the "10/10 operational" philosophy - no
    half-implemented features
 4. **Trademark Discipline**: Always use `BambiSleep™` (with ™) in user-facing
@@ -74,6 +132,7 @@ bambisleep-chat-catgirl/
 │   │   ├── Networking/CatgirlNetworkManager.cs # 323 lines - Relay + Lobby
 │   │   ├── UI/InventoryUI.cs        # 321 lines - UI Toolkit interface
 │   │   └── IPC/IPCBridge.cs         # 541 lines - Unity ↔ Node.js IPC
+│   │   └── IPC/MCPAgent.cs          # MCP integration (scaffold)
 │   ├── Packages/manifest.json       # 16 Unity packages (UGS, Netcode, XR)
 │   └── ProjectSettings/ProjectVersion.txt
 ├── docs/                            # Documentation (consolidated)
@@ -83,10 +142,23 @@ bambisleep-chat-catgirl/
 │   └── DEBUGGING.md                 # 522 lines - complete debug reference
 ├── .github/workflows/build.yml      # CI/CD with 7 jobs
 ├── .vscode/                         # MCP integration + 8 tasks
-├── Dockerfile                       # GHCR: bambisleepchat/bambisleep-church
+│   ├── settings.json                # 8 core + 6 optional MCP servers configured
+│   └── tasks.json                   # 8 VS Code tasks for common workflows
+├── Dockerfile                       # Multi-stage build → GHCR: bambisleepchat/bambisleep-church
 ├── package.json                     # Node.js 20.19.5 (Volta pinned)
-├── setup-mcp.sh                     # MCP server installation
-└── mcp-validate.sh                  # Test all 10 MCP servers
+├── jest.config.js                   # Jest config with 80% coverage threshold
+├── scripts/
+│   ├── setup-mcp.sh                 # MCP server installation
+│   └── mcp-validate.sh              # Test all 8 MCP servers
+├── src/
+│   ├── unity/unity-bridge.js        # 129 lines - Node.js ↔ Unity IPC bridge
+│   ├── server/index.js              # Server implementation
+│   ├── cli/index.js                 # CLI implementation
+│   └── utils/logger.js              # Logging utilities
+└── __tests__/                       # Jest test suite (real implementations)
+    ├── unity-bridge.test.js         # 183 lines - IPC bridge tests
+    ├── config.test.js               # Configuration tests
+    └── server.test.js               # Server tests
 ```
 
 **Essential Documentation** (read in this order):
@@ -288,15 +360,58 @@ await EconomyService.Instance.PlayerBalances.GetBalancesAsync(); // 3. Economy l
 - Always unsubscribe from `NetworkVariable.OnValueChanged` in
   `OnNetworkDespawn()`
 
-**Test Stubs vs Real Tests**
+**Test Framework Status**
 
-- **CRITICAL**: `npm test` currently returns echo stubs - NO real tests exist
-  yet
-- CI/CD continues on test failure (`continue-on-error: true`)
-- Real test framework (Jest/Mocha) planned but not implemented (see `todo.md`)
-- Test coverage reports to Codecov always pass (stub implementation)
-- When implementing features, tests must be added manually - do NOT assume they
-  exist
+- **Jest test framework** with real assertions (NOT stubs) in `__tests__/`
+- **Coverage target**: 80% (branches, functions, lines, statements)
+- **Test files**: `unity-bridge.test.js` (183 lines), `config.test.js`,
+  `server.test.js`
+- **Test patterns**: Use `describe/it` blocks, `expect` assertions, proper
+  setup/teardown
+- **Run with**: `npm test` or `npm run test:watch` (watch mode)
+- **Coverage reports**: Output to `coverage/lcov.info` for Codecov integration
+- **IMPORTANT**: When implementing features, add corresponding tests in
+  `__tests__/` directory following existing patterns
+
+**Jest Test Pattern Example** (from `unity-bridge.test.js`):
+
+```javascript
+describe('UnityBridge', () => {
+  let bridge;
+
+  beforeEach(() => {
+    bridge = new UnityBridge({
+      unityPath: '/mock/unity',
+      projectPath: '/mock/project',
+      batchMode: true
+    });
+  });
+
+  afterEach(() => {
+    if (bridge && bridge.process) {
+      bridge.stop();
+    }
+  });
+
+  it('should parse complete JSON messages', (done) => {
+    const testMessage = { type: 'scene-loaded', data: { sceneName: 'Test' } };
+
+    bridge.on('unity:scene-loaded', (data) => {
+      expect(data).toEqual({ sceneName: 'Test' });
+      done();
+    });
+
+    bridge._handleStdout(Buffer.from(JSON.stringify(testMessage) + '\n'));
+  });
+});
+```
+
+**When writing new tests**:
+
+- Mock child processes with `jest.fn()` for Unity spawning
+- Use EventEmitter patterns for async IPC testing
+- Test both success and error paths
+- Verify JSON message formatting matches IPC protocol spec
 
 **Unity Project Corruption Recovery**
 
@@ -305,6 +420,27 @@ await EconomyService.Instance.PlayerBalances.GetBalancesAsync(); // 3. Economy l
 rm -rf catgirl-avatar-project/{Library,Temp,obj}
 # Then reopen project in Unity Editor to regenerate
 ```
+
+**IPC Bridge Known TODOs** (in `IPCBridge.cs`)
+
+- Line 303: Cathedral parameter application needs implementation
+- Line 330: Real-time cathedral parameter updates incomplete
+- Line 436: Post-processing settings application pending
+- These are scaffolded for future cathedral rendering features
+
+**Unity Editor Version Requirements**
+
+- **Required**: Unity 6.2 LTS (tested with 6000.2.11f1)
+- **Compatible**: Any Unity 6000.2.x patch version (e.g., 6000.2.12f1,
+  6000.2.13f1)
+- **Not compatible**: Unity 6.3+ or Unity 6000.1.x (different minor/patch
+  branches)
+- **Verification**: Run VS Code task "Check Unity Version" or check
+  `catgirl-avatar-project/ProjectSettings/ProjectVersion.txt`
+- **Download**:
+  [Unity 6 LTS Download Page](https://unity.com/releases/lts/6000-2)
+- Unity 6.2 LTS has multi-year support; patch updates maintain API compatibility
+  for NetworkBehaviour, Unity Gaming Services, and XR packages
 
 **Git Tracking & .gitignore Rules**
 
@@ -317,36 +453,57 @@ rm -rf catgirl-avatar-project/{Library,Temp,obj}
 - **Meta files**: Unity `.meta` files ARE tracked (critical for asset
   references)
 
-### MCP Environment (8 Servers)
+### MCP Environment (8 Core + Optional Servers)
 
-- **Setup**: Run `./setup-mcp.sh` (installs all servers)
-- **Validation**: Run `./mcp-validate.sh` (tests 8/8 operational)
-- **Config**: `.vscode/settings.json` (filesystem, git, github, memory,
-  sequential-thinking, everything, brave-search, postgres)
+**Core MCP Servers (8 validated via `./scripts/mcp-validate.sh`):**
+
+- **Setup**: Run `./scripts/setup-mcp.sh` (installs with UV/NPX package
+  managers)
+- **Validation**: Run `./scripts/mcp-validate.sh` (tests 8/8 operational, 5s
+  timeout per server)
+- **Core servers**: filesystem, git, github, memory, sequential-thinking,
+  everything, brave-search, postgres
 - **Unity Integration**: VS Code setting `"unity.projectPath"` points to
   `catgirl-avatar-project/`
-- **Use cases**:
-  - Create Unity scripts with proper namespaces (filesystem MCP)
-  - Commit with emoji conventions (git MCP):
-    `git commit -m "🦋 Add butterfly flight"`
-  - Create GitHub issues linked to code (github MCP)
-  - Remember project context across sessions (memory MCP)
-  - Search web for Unity API documentation (brave-search MCP)
+
+**Optional MCP Integrations (configured but not validated):**
+
+- **stripe** (HTTP): Payment processing integration via `https://mcp.stripe.com`
+- **huggingface** (HTTP): ML model discovery via `https://huggingface.co/mcp`
+- **mongodb** (stdio): Database operations (read-only mode)
+- **playwright** (stdio): Browser automation for testing
+- **clarity** (stdio): Microsoft Clarity analytics integration
+- **docker** (stdio): Container management operations
+
+**Common Use Cases:**
+
+- Create Unity scripts with proper namespaces (filesystem MCP)
+- Commit with emoji conventions (git MCP):
+  `git commit -m "🦋 Add butterfly flight"`
+- Create GitHub issues linked to code (github MCP)
+- Remember project context across sessions (memory MCP)
+- Search web for Unity API documentation (brave-search MCP)
+- Database schema management (postgres MCP)
 
 ### Build & Deploy Commands
 
 ```bash
 # Development
-npm test                          # Run tests (stubs currently, see todo.md)
-npm run build -- --universal      # Cross-platform build
-./setup-mcp.sh                    # Install MCP servers
+npm test                          # Run Jest tests with coverage
+npm run test:watch                # Watch mode for development
+npm run build -- --universal      # Cross-platform build (echo stub)
+./scripts/setup-mcp.sh            # Install MCP servers
+./scripts/mcp-validate.sh         # Validate all 8 MCP servers
 
 # Unity
 # Use VS Code Task: "Clean Unity Project" (removes Library/Temp/obj)
 # Use VS Code Task: "Check Unity Version" (Unity 6000.2.11f1)
 
-# Container
+# Container (Multi-stage build)
 docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .
+# Stage 1: dependencies (production deps only)
+# Stage 2: builder (includes dev deps)
+# Stage 3: runtime (optimized final image)
 # Registry: ghcr.io/bambisleepchat/bambisleep-church
 # Tags: v{major}.{minor}.{patch}, dev-{branch}, latest
 ```
@@ -366,6 +523,14 @@ docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .
 - **Jobs**: validate-mcp → test → build-container → unity-validation → deploy →
   quality-check → summary
 - **Artifacts**: Container images pushed to GHCR with proper labels
+- **Container Registry Authentication**:
+  - CI/CD uses `${{ secrets.GITHUB_TOKEN }}` (automatic)
+  - Manual push requires GitHub Personal Access Token with `write:packages`
+    scope
+  - Login:
+    `echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin`
+  - See:
+    [GitHub Container Registry Docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 
 ## Real-World Development Scenarios
 

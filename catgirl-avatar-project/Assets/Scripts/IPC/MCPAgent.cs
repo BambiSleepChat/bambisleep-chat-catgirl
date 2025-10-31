@@ -64,10 +64,10 @@ namespace BambiSleep.CatGirl.IPC
         [Header("🔥 Performance Optimization")]
         [Tooltip("Batch MCP requests for efficiency")]
         public bool batchRequests = true;
-        
+
         [Tooltip("Cache responses to reduce redundant calls")]
         public bool cacheResponses = true;
-        
+
         [Tooltip("Maximum concurrent MCP operations")]
         [Range(1, 10)]
         public int maxConcurrentOps = 5;
@@ -223,7 +223,7 @@ namespace BambiSleep.CatGirl.IPC
                 path = path
             };
 
-            EnqueueMCPRequest("filesystem", "read_text_file", JsonConvert.SerializeObject(operation), 
+            EnqueueMCPRequest("filesystem", "read_text_file", JsonConvert.SerializeObject(operation),
                 response =>
                 {
                     if (response.success)
@@ -794,7 +794,7 @@ namespace BambiSleep.CatGirl.IPC
             };
 
             string jsonMessage = JsonConvert.SerializeObject(ipcMessage);
-            
+
             // In a real implementation, this would use IPCBridge to send message
             // For now, simulate the request-response cycle
             Debug.Log($"🔄 MCP Request: {request.server}.{request.action}");
@@ -844,7 +844,7 @@ namespace BambiSleep.CatGirl.IPC
                     if (success)
                     {
                         // 4. Create GitHub issue for testing
-                        CreateBugReport("Test butterfly flight feature", "Comprehensive testing needed for new flight mechanics", 
+                        CreateBugReport("Test butterfly flight feature", "Comprehensive testing needed for new flight mechanics",
                             new[] { "testing", "feature" });
                     }
                 });
