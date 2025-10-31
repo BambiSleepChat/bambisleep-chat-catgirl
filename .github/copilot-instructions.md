@@ -283,8 +283,6 @@ private void Awake()
 - `com.unity.cinemachine` 2.10.1 (camera system)
 - `com.unity.timeline` 1.8.7 (cutscenes & animation sequences)
 
-### 6. Unity IPC Protocol (Node.js ↔ Unity Communication)
-
 ```javascript
 // Node.js side (src/unity/unity-bridge.js)
 sendMessage(type, data) {
@@ -338,6 +336,129 @@ void SendMessage(string type, object data) {
 
 **See**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol
 specification
+
+### 7. Unity Package Dependencies (16 packages)
+
+From `Packages/manifest.json`, critical packages for development:
+
+**Multiplayer & Networking:**
+- `com.unity.netcode.gameobjects` 2.0.0 - Core multiplayer framework
+- `com.unity.services.relay` 1.1.3 - NAT traversal for P2P connections
+- `com.unity.services.lobby` 1.2.2 - Matchmaking and lobby system
+
+**Economy & Services:**
+- `com.unity.services.core` 1.15.0 - Required base for all Unity Gaming Services
+- `com.unity.services.authentication` 3.3.4 - Player identity (MUST initialize first)
+- `com.unity.services.economy` 3.4.2 - Currency and inventory cloud storage
+- `com.unity.services.analytics` 5.1.1 - Telemetry and player behavior tracking
+- `com.unity.purchasing` 4.12.2 - In-app purchase integration
+
+**XR & Advanced Features:**
+- `com.unity.xr.interaction.toolkit` 3.0.5 - Eye tracking, hand gestures, VR input
+
+**UI & Visuals:**
+- `com.unity.ui.toolkit` 2.0.0 - Modern UI system (used by InventoryUI.cs)
+- `com.unity.ugui` 2.0.0 - Legacy UI system (Canvas-based)
+- `com.unity.visualeffectgraph` 16.0.6 - Particle systems and VFX
+
+**Asset Management:**
+- `com.unity.addressables` 2.3.1 - Async asset loading and memory management
+
+**Animation & Cinematics:**
+- `com.unity.animation.rigging` 1.3.1 - Procedural animation (tail physics, IK)
+- `com.unity.cinemachine` 2.10.1 - Camera system with cinematic features
+- `com.unity.timeline` 1.8.7 - Cutscenes and sequenced animations
+
+### 8. Economy System Patterns (InventorySystem.cs & UniversalBankingSystem.cs)
+
+**Item Rarity System** (5 tiers):
+```csharp
+public int rarity; // 1=Common, 2=Uncommon, 3=Rare, 4=Epic, 5=Diablo Secret Level
+public bool isCowPowerItem = false; // Secret cow power flag
+public float pinkValue = 0f; // Pink currency value
+```
+
+**Currency Management** (Multi-currency system):
+```csharp
+[SerializeField] private string primaryCurrencyId = "PINK_COINS";
+[SerializeField] private List<CurrencyBalance> currencies;
+
+// Load from Unity Gaming Services
+var balances = await EconomyService.Instance.PlayerBalances.GetBalancesAsync();
+```
+
+**Gambling System** (2% house edge):
+```csharp
+[SerializeField] private float houseEdge = 0.02f; // 2% house advantage
+[SerializeField] private long minBet = 10;
+[SerializeField] private long maxBet = 10000;
+
+// Process gambling wins with rarity drops
+float roll = Random.value;
+if (roll < 0.001f) { // 0.1% legendary drop
+    inventory.AddItem(GetLegendaryItem("divine_cow_crown_001"));
+}
+```
+
+**Auction System** (5% listing fee):
+```csharp
+[SerializeField] private float auctionFeePercentage = 0.05f;
+
+[System.Serializable]
+public struct AuctionItem {
+    public string auctionId;
+    public long currentBid;
+    public string highestBidder;
+    public System.DateTime endTime;
+}
+```
+
+**Transaction Logging**:
+```csharp
+[SerializeField] private List<Transaction> transactionHistory;
+[SerializeField] private int maxHistoryEntries = 100;
+
+// Track all currency movements
+var transaction = new Transaction {
+    transactionId = System.Guid.NewGuid().ToString(),
+    type = "gambling", // deposit, withdrawal, gambling, auction
+    timestamp = System.DateTime.UtcNow
+};
+```
+
+### 9. Data Serialization Patterns
+
+**[System.Serializable] for Inspector Editing**:
+```csharp
+[System.Serializable]
+public class CatgirlStats {
+    [Header("✨ Frilly Pink Configuration")]
+    public float pinkIntensity = 1.0f;
+    public float frillinessLevel = 100.0f;
+}
+```
+
+**NetworkVariable for Multiplayer Sync**:
+```csharp
+private NetworkVariable<float> networkPinkIntensity = new NetworkVariable<float>(1.0f);
+private NetworkVariable<bool> networkCowPowersActive = new NetworkVariable<bool>(false);
+
+// Subscribe in OnNetworkSpawn
+networkPinkIntensity.OnValueChanged += OnPinkIntensityChanged;
+
+// Unsubscribe in OnNetworkDespawn
+networkPinkIntensity.OnValueChanged -= OnPinkIntensityChanged;
+```
+
+**Unity Gaming Services Data**:
+```csharp
+// Load from cloud
+var inventoryResult = await EconomyService.Instance.PlayerInventory.GetInventoryAsync();
+var balances = await EconomyService.Instance.PlayerBalances.GetBalancesAsync();
+
+// Save to cloud (handled automatically by UGS)
+await EconomyService.Instance.PlayerBalances.IncrementBalanceAsync("PINK_COINS", 100);
+```
 
 ## Development Workflows
 
@@ -475,6 +596,28 @@ rm -rf catgirl-avatar-project/{Library,Temp,obj}
 - **clarity** (stdio): Microsoft Clarity analytics integration
 - **docker** (stdio): Container management operations
 
+**MCP Integration in Unity** (MCPAgent.cs):
+
+The `MCPAgent` component (in `Assets/Scripts/IPC/MCPAgent.cs`) provides Unity-side MCP integration:
+
+```csharp
+// Enable in Unity Inspector
+public bool enableFilesystemMCP = true;
+public bool enableGitMCP = true;
+public bool enableMemoryMCP = true;
+
+// Send MCP request from Unity
+mcpAgent.SendMCPRequest("filesystem", "create_file", new {
+    path = "Assets/Scripts/Character/NewAbility.cs",
+    content = generatedCSharpCode
+});
+
+// Listen for MCP responses
+mcpAgent.OnMCPResponse += (server, response) => {
+    Debug.Log($"MCP {server} responded: {response}");
+};
+```
+
 **Common Use Cases:**
 
 - Create Unity scripts with proper namespaces (filesystem MCP)
@@ -484,6 +627,7 @@ rm -rf catgirl-avatar-project/{Library,Temp,obj}
 - Remember project context across sessions (memory MCP)
 - Search web for Unity API documentation (brave-search MCP)
 - Database schema management (postgres MCP)
+- AI-powered code generation (sequential-thinking MCP)
 
 ### Build & Deploy Commands
 
