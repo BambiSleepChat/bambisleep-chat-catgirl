@@ -57,16 +57,16 @@ Your Task → Quick Guide
 
 1. Read the existing script FIRST:
    `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs`
-2. Follow these exact patterns: proper namespace, emoji headers, NetworkBehaviour
-   lifecycle
+2. Follow these exact patterns: proper namespace, emoji headers,
+   NetworkBehaviour lifecycle
 3. Test with VS Code task "Check Unity Version" to verify Unity 6000.2.11f1
 4. Run `npm test` to ensure Node.js integration still works
 
 **For debugging issues:**
 
-- Unity errors: `docs/DEBUGGING.md` (522 lines with Unity-specific troubleshooting)
-- UGS auth failures: Check initialization order (UnityServices → Auth →
-  Economy)
+- Unity errors: `docs/DEBUGGING.md` (522 lines with Unity-specific
+  troubleshooting)
+- UGS auth failures: Check initialization order (UnityServices → Auth → Economy)
 - Test failures: Review `__tests__/unity-bridge.test.js` for patterns
 - MCP issues: Run `./scripts/mcp-validate.sh` (tests 8/8 operational)
 
@@ -342,29 +342,37 @@ specification
 From `Packages/manifest.json`, critical packages for development:
 
 **Multiplayer & Networking:**
+
 - `com.unity.netcode.gameobjects` 2.0.0 - Core multiplayer framework
 - `com.unity.services.relay` 1.1.3 - NAT traversal for P2P connections
 - `com.unity.services.lobby` 1.2.2 - Matchmaking and lobby system
 
 **Economy & Services:**
+
 - `com.unity.services.core` 1.15.0 - Required base for all Unity Gaming Services
-- `com.unity.services.authentication` 3.3.4 - Player identity (MUST initialize first)
+- `com.unity.services.authentication` 3.3.4 - Player identity (MUST initialize
+  first)
 - `com.unity.services.economy` 3.4.2 - Currency and inventory cloud storage
 - `com.unity.services.analytics` 5.1.1 - Telemetry and player behavior tracking
 - `com.unity.purchasing` 4.12.2 - In-app purchase integration
 
 **XR & Advanced Features:**
-- `com.unity.xr.interaction.toolkit` 3.0.5 - Eye tracking, hand gestures, VR input
+
+- `com.unity.xr.interaction.toolkit` 3.0.5 - Eye tracking, hand gestures, VR
+  input
 
 **UI & Visuals:**
+
 - `com.unity.ui.toolkit` 2.0.0 - Modern UI system (used by InventoryUI.cs)
 - `com.unity.ugui` 2.0.0 - Legacy UI system (Canvas-based)
 - `com.unity.visualeffectgraph` 16.0.6 - Particle systems and VFX
 
 **Asset Management:**
+
 - `com.unity.addressables` 2.3.1 - Async asset loading and memory management
 
 **Animation & Cinematics:**
+
 - `com.unity.animation.rigging` 1.3.1 - Procedural animation (tail physics, IK)
 - `com.unity.cinemachine` 2.10.1 - Camera system with cinematic features
 - `com.unity.timeline` 1.8.7 - Cutscenes and sequenced animations
@@ -372,6 +380,7 @@ From `Packages/manifest.json`, critical packages for development:
 ### 8. Economy System Patterns (InventorySystem.cs & UniversalBankingSystem.cs)
 
 **Item Rarity System** (5 tiers):
+
 ```csharp
 public int rarity; // 1=Common, 2=Uncommon, 3=Rare, 4=Epic, 5=Diablo Secret Level
 public bool isCowPowerItem = false; // Secret cow power flag
@@ -379,6 +388,7 @@ public float pinkValue = 0f; // Pink currency value
 ```
 
 **Currency Management** (Multi-currency system):
+
 ```csharp
 [SerializeField] private string primaryCurrencyId = "PINK_COINS";
 [SerializeField] private List<CurrencyBalance> currencies;
@@ -388,6 +398,7 @@ var balances = await EconomyService.Instance.PlayerBalances.GetBalancesAsync();
 ```
 
 **Gambling System** (2% house edge):
+
 ```csharp
 [SerializeField] private float houseEdge = 0.02f; // 2% house advantage
 [SerializeField] private long minBet = 10;
@@ -401,6 +412,7 @@ if (roll < 0.001f) { // 0.1% legendary drop
 ```
 
 **Auction System** (5% listing fee):
+
 ```csharp
 [SerializeField] private float auctionFeePercentage = 0.05f;
 
@@ -414,6 +426,7 @@ public struct AuctionItem {
 ```
 
 **Transaction Logging**:
+
 ```csharp
 [SerializeField] private List<Transaction> transactionHistory;
 [SerializeField] private int maxHistoryEntries = 100;
@@ -429,6 +442,7 @@ var transaction = new Transaction {
 ### 9. Data Serialization Patterns
 
 **[System.Serializable] for Inspector Editing**:
+
 ```csharp
 [System.Serializable]
 public class CatgirlStats {
@@ -439,6 +453,7 @@ public class CatgirlStats {
 ```
 
 **NetworkVariable for Multiplayer Sync**:
+
 ```csharp
 private NetworkVariable<float> networkPinkIntensity = new NetworkVariable<float>(1.0f);
 private NetworkVariable<bool> networkCowPowersActive = new NetworkVariable<bool>(false);
@@ -451,6 +466,7 @@ networkPinkIntensity.OnValueChanged -= OnPinkIntensityChanged;
 ```
 
 **Unity Gaming Services Data**:
+
 ```csharp
 // Load from cloud
 var inventoryResult = await EconomyService.Instance.PlayerInventory.GetInventoryAsync();
@@ -459,6 +475,381 @@ var balances = await EconomyService.Instance.PlayerBalances.GetBalancesAsync();
 // Save to cloud (handled automatically by UGS)
 await EconomyService.Instance.PlayerBalances.IncrementBalanceAsync("PINK_COINS", 100);
 ```
+
+### 10. Animation System - Mecanim State Machine Patterns
+
+**Animator Controller Setup** (from CatgirlController.cs):
+
+```csharp
+// Cache animation parameter hashes (CRITICAL for performance)
+private static readonly int Speed = Animator.StringToHash("Speed");
+private static readonly int IsJumping = Animator.StringToHash("IsJumping");
+private static readonly int IsPurring = Animator.StringToHash("IsPurring");
+private static readonly int CowPowerActive = Animator.StringToHash("CowPowerActive");
+
+private Animator animator;
+
+void Awake() {
+    animator = GetComponent<Animator>();
+}
+```
+
+**Parameter Updates** (every frame optimization):
+
+```csharp
+void Update() {
+    // ❌ NEVER DO THIS (string lookup every frame = performance killer)
+    // animator.SetFloat("Speed", currentSpeed);
+
+    // ✅ DO THIS (cached hash lookup = fast)
+    animator.SetFloat(Speed, currentSpeed);
+    animator.SetBool(IsJumping, isJumping);
+    animator.SetBool(IsPurring, isPurring);
+}
+```
+
+**State Machine Transitions**:
+
+```csharp
+// Trigger-based transitions (one-time events)
+animator.SetTrigger("Jump");
+animator.SetTrigger("Attack");
+animator.SetTrigger("Dance");
+
+// Boolean-based transitions (state toggles)
+animator.SetBool(IsPurring, true);  // Enter purring state
+animator.SetBool(IsPurring, false); // Exit purring state
+
+// Float-based blend trees (smooth transitions)
+animator.SetFloat(Speed, currentSpeed); // 0.0 = idle, 1.0 = walk, 2.0 = run
+```
+
+**Animation Events** (called from animation clips):
+
+```csharp
+// These methods are invoked by Animation Events in Unity Editor
+public void OnFootstep() {
+    AudioManager.Instance.PlayOneShot("footstep");
+}
+
+public void OnPurrStart() {
+    AudioManager.Instance.Play("purring_loop");
+}
+
+public void OnCowPowerActivated() {
+    AudioManager.Instance.PlayRandomCowMoo();
+    // Spawn particle effects, etc.
+}
+```
+
+**Layered Animation** (multiple simultaneous animations):
+
+```csharp
+// Base layer: locomotion (walk, run, jump)
+animator.SetFloat(Speed, moveSpeed);
+
+// Upper body layer: gestures (wave, point, emote)
+animator.SetLayerWeight(1, 1.0f); // Enable upper body layer
+animator.SetTrigger("Wave");
+
+// Facial layer: expressions (smile, blink, purr)
+animator.SetLayerWeight(2, 1.0f);
+```
+
+**Common Mecanim State Machine Structure**:
+
+- **Idle State** → Speed = 0
+- **Walk State** → Speed > 0 && Speed < 1.5
+- **Run State** → Speed >= 1.5
+- **Jump State** → IsJumping = true (exit condition: OnAnimationEnd)
+- **Purr State** → IsPurring = true (looping animation)
+- **Special State** → CowPowerActive = true (pink frilly effects)
+
+### 11. Audio System - AudioManager Singleton Pattern
+
+**Singleton Implementation** (from AudioManager.cs):
+
+```csharp
+namespace BambiSleep.CatGirl.Audio
+{
+    public class AudioManager : MonoBehaviour
+    {
+        private static AudioManager instance;
+
+        public static AudioManager Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<AudioManager>();
+                    if (instance == null)
+                    {
+                        GameObject go = new GameObject("AudioManager");
+                        instance = go.AddComponent<AudioManager>();
+                    }
+                }
+                return instance;
+            }
+        }
+
+        private void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(gameObject); // Persist across scenes
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject); // Destroy duplicate
+                return;
+            }
+
+            InitializeAudioSources();
+        }
+    }
+}
+```
+
+**Audio Mixer Groups** (4-channel architecture):
+
+```csharp
+[SerializeField] private AudioMixerGroup masterMixerGroup;
+[SerializeField] private AudioMixerGroup musicMixerGroup;
+[SerializeField] private AudioMixerGroup sfxMixerGroup;
+[SerializeField] private AudioMixerGroup voiceMixerGroup;
+
+// Volume control (logarithmic scale for natural perception)
+public void SetMasterVolume(float volume) {
+    masterMixerGroup?.audioMixer.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
+}
+
+public void SetMusicVolume(float volume) {
+    musicMixerGroup?.audioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20);
+}
+```
+
+**Sound Dictionary Pattern** (O(1) lookup):
+
+```csharp
+[System.Serializable]
+public class Sound {
+    public string name;
+    public AudioClip clip;
+    [Range(0f, 1f)] public float volume = 1f;
+    [Range(0.1f, 3f)] public float pitch = 1f;
+    public bool loop = false;
+    [HideInInspector] public AudioSource source;
+}
+
+[SerializeField] private Sound[] sounds;
+private Dictionary<string, Sound> soundDictionary = new Dictionary<string, Sound>();
+
+void InitializeAudioSources() {
+    foreach (Sound sound in sounds) {
+        sound.source = gameObject.AddComponent<AudioSource>();
+        sound.source.clip = sound.clip;
+        sound.source.volume = sound.volume;
+        sound.source.pitch = sound.pitch;
+        sound.source.loop = sound.loop;
+        sound.source.outputAudioMixerGroup = sfxMixerGroup;
+
+        soundDictionary[sound.name] = sound; // Fast lookup
+    }
+}
+```
+
+**Common Usage Patterns**:
+
+```csharp
+// Play sound by name (fast dictionary lookup)
+AudioManager.Instance.Play("footstep");
+AudioManager.Instance.Play("purring_loop");
+AudioManager.Instance.Stop("purring_loop");
+
+// One-shot sounds (fire and forget)
+AudioManager.Instance.PlayOneShot("nyan_sound");
+AudioManager.Instance.PlayOneShot("button_click");
+
+// Random variations (adds variety)
+AudioManager.Instance.PlayRandomPurr();
+AudioManager.Instance.PlayRandomNyan();
+AudioManager.Instance.PlayRandomCowMoo(); // 🐄
+
+// Music transitions (crossfade)
+AudioManager.Instance.PlayMusic(backgroundMusicClip);
+AudioManager.Instance.FadeMusicTo(combatMusicClip, 2.0f); // 2 second fade
+```
+
+**Best Practices**:
+
+- **One AudioManager per scene** (DontDestroyOnLoad ensures singleton)
+- **Preload sounds in dictionary** for fast runtime lookup
+- **Use AudioMixerGroups** for grouped volume control (Master/Music/SFX/Voice)
+- **One-shot for effects**, **looping for ambience/music**
+- **Object pooling** for frequently used sounds (e.g., footsteps)
+
+### 12. UI Toolkit Patterns - Modern UI Implementation
+
+**UIDocument Setup** (from InventoryUI.cs):
+
+```csharp
+namespace BambiSleep.CatGirl.UI
+{
+    public class InventoryUI : MonoBehaviour
+    {
+        [SerializeField] private UIDocument uiDocument;
+        private VisualElement root;
+
+        private void OnEnable()
+        {
+            root = uiDocument.rootVisualElement;
+            InitializeUI();
+        }
+    }
+}
+```
+
+**Pink Theme Colors** (project-specific palette):
+
+```csharp
+[Header("💎 Pink Theme Colors")]
+[SerializeField] private Color pinkPrimary = new Color(1f, 0.41f, 0.71f);    // #ff69b4
+[SerializeField] private Color pinkHighlight = new Color(1f, 0.08f, 0.58f);  // #ff1493
+[SerializeField] private Color pinkDark = new Color(0.78f, 0.08f, 0.52f);    // #c71585
+```
+
+**Creating UI Elements Programmatically**:
+
+```csharp
+// Container with styling
+var mainContainer = new VisualElement();
+mainContainer.name = "inventory-main-container";
+mainContainer.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
+mainContainer.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+mainContainer.style.backgroundColor = new StyleColor(new Color(0.1f, 0.1f, 0.1f, 0.95f));
+mainContainer.style.paddingTop = 20;
+mainContainer.style.paddingLeft = 20;
+
+// Styled label
+var headerLabel = new Label("🌸 Pink Frilly Inventory 🌸");
+headerLabel.style.fontSize = 32;
+headerLabel.style.color = pinkPrimary;
+headerLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+headerLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+mainContainer.Add(headerLabel);
+```
+
+**Button with Hover Effects**:
+
+```csharp
+private Button CreateButton(string text, System.Action callback)
+{
+    var button = new Button(callback);
+    button.text = text;
+    button.style.backgroundColor = pinkDark;
+    button.style.color = Color.white;
+    button.style.paddingTop = 10;
+    button.style.paddingBottom = 10;
+    button.style.paddingLeft = 20;
+    button.style.paddingRight = 20;
+    button.style.borderTopLeftRadius = 5;
+    button.style.borderBottomRightRadius = 5;
+    button.style.fontSize = 16;
+
+    // Hover effect (interactive feedback)
+    button.RegisterCallback<MouseEnterEvent>(evt => {
+        button.style.backgroundColor = pinkHighlight;
+    });
+    button.RegisterCallback<MouseLeaveEvent>(evt => {
+        button.style.backgroundColor = pinkDark;
+    });
+
+    return button;
+}
+```
+
+**Flexbox Layout** (responsive grid):
+
+```csharp
+// Grid container with wrap
+inventoryContainer = new VisualElement();
+inventoryContainer.style.flexDirection = FlexDirection.Row;
+inventoryContainer.style.flexWrap = Wrap.Wrap;
+inventoryContainer.style.justifyContent = Justify.FlexStart;
+inventoryContainer.style.flexGrow = 1;
+
+// Item cards (150x200 each)
+foreach (var slot in slots) {
+    var card = new VisualElement();
+    card.style.width = 150;
+    card.style.height = 200;
+    card.style.marginRight = 10;
+    card.style.marginBottom = 10;
+    card.style.borderTopLeftRadius = 10;
+    card.style.borderBottomRightRadius = 10;
+
+    // Rarity-based border color
+    Color borderColor = GetRarityColor(slot.item.rarity);
+    card.style.borderTopColor = borderColor;
+    card.style.borderTopWidth = 3;
+
+    inventoryContainer.Add(card);
+}
+```
+
+**Rarity Color System**:
+
+```csharp
+private Color GetRarityColor(int rarity) {
+    return rarity switch {
+        1 => Color.gray,                // Common
+        2 => Color.green,               // Uncommon
+        3 => Color.blue,                // Rare
+        4 => new Color(0.64f, 0.21f, 0.93f), // Epic (purple)
+        5 => new Color(1f, 0.5f, 0f),   // Legendary (orange)
+        _ => Color.white
+    };
+}
+```
+
+**USS (Unity Style Sheets) Alternative**:
+
+Instead of C# styling, use USS files for cleaner separation:
+
+```css
+/* Resources/UI/InventoryStyles.uss */
+.inventory-main-container {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 26, 26, 0.95);
+  padding: 20px;
+}
+
+.inventory-header {
+  font-size: 32px;
+  color: rgb(255, 105, 180);
+  -unity-text-align: middle-center;
+  -unity-font-style: bold;
+  margin-bottom: 20px;
+}
+
+.inventory-grid {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-grow: 1;
+}
+```
+
+**Best Practices**:
+
+- **USS for static styles**, **C# for dynamic styling**
+- **Use flexbox** for responsive layouts (flex-direction, flex-wrap)
+- **Register callbacks** for interactive elements (hover, click)
+- **Name elements** for USS selector targeting
+- **StyleLength** units: Percent, Pixel, Auto
 
 ## Development Workflows
 
@@ -598,7 +989,8 @@ rm -rf catgirl-avatar-project/{Library,Temp,obj}
 
 **MCP Integration in Unity** (MCPAgent.cs):
 
-The `MCPAgent` component (in `Assets/Scripts/IPC/MCPAgent.cs`) provides Unity-side MCP integration:
+The `MCPAgent` component (in `Assets/Scripts/IPC/MCPAgent.cs`) provides
+Unity-side MCP integration:
 
 ```csharp
 // Enable in Unity Inspector
@@ -677,6 +1069,25 @@ docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .
     [GitHub Container Registry Docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 
 ## Real-World Development Scenarios
+
+### Scenario Index - Quick Lookup
+
+| #   | Scenario                                                                                    | Key Technologies                      | Files Modified                                | Complexity |
+| --- | ------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------- | ---------- |
+| 1   | [Adding New Catgirl Ability](#scenario-1-adding-new-catgirl-ability)                        | NetworkBehaviour, ServerRpc, Animator | CatgirlController.cs                          | ⭐⭐       |
+| 2   | [Creating Shop Item with Gambling](#scenario-2-creating-new-shop-item-with-gambling-unlock) | UGS Economy, Item System              | InventorySystem.cs, UniversalBankingSystem.cs | ⭐⭐⭐     |
+| 3   | [MCP-Assisted Development](#scenario-3-mcp-assisted-development-workflow)                   | Filesystem/Git/GitHub MCP             | New Unity scripts                             | ⭐         |
+| 4   | [Debugging UGS Integration](#scenario-4-debugging-unity-gaming-services-integration)        | Unity Services, Authentication        | UniversalBankingSystem.cs                     | ⭐⭐⭐     |
+| 5   | [Multiplayer Auction House](#scenario-5-implementing-multiplayer-auction-house)             | NetworkList, ClientRpc                | UniversalBankingSystem.cs, InventoryUI.cs     | ⭐⭐⭐⭐   |
+| 6   | [Optimizing Animator Performance](#scenario-6-optimizing-animator-performance)              | StringToHash, Culling                 | CatgirlController.cs                          | ⭐⭐       |
+| 7   | [Container Deployment](#scenario-7-container-deployment-with-new-features)                  | Docker, GHCR, Semantic Versioning     | Dockerfile, package.json                      | ⭐⭐       |
+| 8   | [Memory Server Context](#scenario-8-memory-server-for-development-context)                  | MCP Memory, Context Persistence       | N/A (MCP usage)                               | ⭐         |
+| 9   | [Node.js ↔ Unity IPC](#scenario-9-nodejs--unity-ipc-communication)                         | Child Process, EventEmitter           | unity-bridge.js, IPCBridge.cs                 | ⭐⭐⭐⭐   |
+
+**Complexity Legend**: ⭐ = Beginner | ⭐⭐ = Intermediate | ⭐⭐⭐ = Advanced |
+⭐⭐⭐⭐ = Expert
+
+---
 
 ### Scenario 1: Adding New Catgirl Ability
 
