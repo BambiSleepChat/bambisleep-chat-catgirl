@@ -99,7 +99,8 @@ bambisleep-chat-catgirl/
 
 ## Critical Unity C# Patterns
 
-**All 7 systems are COMPLETE** (2,491 lines). When extending, follow these patterns:
+**All 7 systems are COMPLETE** (2,491 lines). When extending, follow these
+patterns:
 
 ### 1. Namespace & Structure
 
