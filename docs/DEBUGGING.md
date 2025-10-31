@@ -1,6 +1,6 @@
 # 🐛 BambiSleep™ Unity Debugging Guide
 
-**Complete debugging reference for Unity 6.2 LTS + VS Code development**
+> Complete debugging reference for Unity 6.2 LTS + VS Code development
 
 ---
 
@@ -551,7 +551,7 @@ animator.GetFloat(Speed)
 
 ## 📚 Additional Resources
 
-- Unity Manual: https://docs.unity3d.com/Manual/
-- Netcode for GameObjects: https://docs-multiplayer.unity3d.com/
-- Unity Gaming Services: https://docs.unity.com/ugs/
-- VS Code Unity Extension: https://code.visualstudio.com/docs/other/unity
+- Unity Manual: <https://docs.unity3d.com/Manual/>
+- Netcode for GameObjects: <https://docs-multiplayer.unity3d.com/>
+- Unity Gaming Services: <https://docs.unity.com/ugs/>
+- VS Code Unity Extension: <https://code.visualstudio.com/docs/other/unity>

@@ -1,12 +1,15 @@
 # 🌸 MCP Agent Integration Guide
 
-**Complete integration between Unity and all 10 Model Context Protocol servers**
+> Complete integration between Unity and all 10 Model Context Protocol servers
 
 ---
 
 ## Overview
 
-The `MCPAgent` provides intelligent automation for the BambiSleep™ CatGirl Avatar System by integrating Unity with 10 MCP servers. This enables AI-powered development workflows, automated testing, version control, and intelligent decision-making directly from Unity.
+The `MCPAgent` provides intelligent automation for the BambiSleep™ CatGirl
+Avatar System by integrating Unity with 10 MCP servers. This enables AI-powered
+development workflows, automated testing, version control, and intelligent
+decision-making directly from Unity.
 
 ### 10 MCP Servers Integrated
 
@@ -37,6 +40,7 @@ agent.ipcBridge = FindObjectOfType<IPCBridge>();
 ### 2. Configure MCP Servers
 
 In Unity Inspector:
+
 - ✅ Enable desired MCP servers
 - ⚙️ Set `maxConcurrentOps` (default: 5)
 - 📦 Enable `cacheResponses` for performance
@@ -83,7 +87,7 @@ MCPAgent.Instance.SearchAssets("*.prefab", files =>
 
 ```csharp
 // Commit with emoji convention
-MCPAgent.Instance.CommitChanges("🦋", "Add butterfly flight feature", 
+MCPAgent.Instance.CommitChanges("🦋", "Add butterfly flight feature",
     new List<string> { "Assets/Scripts/Character/" }, success =>
 {
     if (success) Debug.Log("✅ Committed with 🦋 emoji");
@@ -109,7 +113,7 @@ MCPAgent.Instance.CreateFeatureBranch("cow-powers-enhancement", success =>
 ```csharp
 // Create bug report
 MCPAgent.Instance.CreateBugReport(
-    "NetworkBehaviour sync issue in multiplayer", 
+    "NetworkBehaviour sync issue in multiplayer",
     "Players not seeing each other's animations correctly",
     new[] { "bug", "multiplayer", "networking" },
     issueUrl =>
@@ -135,7 +139,7 @@ MCPAgent.Instance.CreatePullRequest(
 ```csharp
 // Record development observation
 MCPAgent.Instance.RecordObservation(
-    "Character Controller", 
+    "Character Controller",
     "Implemented double-jump with NetworkBehaviour sync",
     success =>
     {
@@ -186,7 +190,7 @@ MCPAgent.Instance.SearchUnityDocs("NetworkBehaviour OnNetworkSpawn", results =>
 MCPAgent.Instance.SetupPlayerEconomy("player@example.com", customerId =>
 {
     Debug.Log($"✅ Player economy setup: {customerId}");
-    
+
     // Create payment for in-game purchase
     MCPAgent.Instance.CreatePayment(
         999,              // $9.99 in cents
@@ -330,7 +334,7 @@ agent.ShowMCPStatus();
 
 ### Request Flow
 
-```
+```text
 Unity MCPAgent → IPCBridge → Node.js → MCP Server → Response
       ↓                                                  ↓
   Callback                                         JSON Response
@@ -339,6 +343,7 @@ Unity MCPAgent → IPCBridge → Node.js → MCP Server → Response
 ### Data Structures
 
 **MCPRequest:**
+
 ```csharp
 {
     "server": "github",
@@ -349,6 +354,7 @@ Unity MCPAgent → IPCBridge → Node.js → MCP Server → Response
 ```
 
 **MCPResponse:**
+
 ```csharp
 {
     "success": true,
@@ -420,7 +426,7 @@ public class InventorySystem : MonoBehaviour
             { "items", items },
             { "capacity", maxSlots }
         };
-        
+
         // Save to Postgres via MCP
         MCPAgent.Instance.SavePlayerData(playerId, inventoryData, success =>
         {
@@ -437,6 +443,7 @@ public class InventorySystem : MonoBehaviour
 ### Issue: "IPCBridge not found"
 
 **Solution:**
+
 ```csharp
 // Ensure IPCBridge exists in scene
 GameObject ipcBridgeObj = new GameObject("IPC Bridge");
@@ -449,6 +456,7 @@ MCPAgent.Instance.ipcBridge = bridge;
 ### Issue: MCP requests timing out
 
 **Solution:**
+
 ```csharp
 // Increase timeout or reduce concurrent operations
 agent.maxConcurrentOps = 3; // Reduce from 5 to 3
@@ -460,6 +468,7 @@ agent.maxConcurrentOps = 3; // Reduce from 5 to 3
 ### Issue: High memory usage from cache
 
 **Solution:**
+
 ```csharp
 // Clear cache periodically
 InvokeRepeating("ClearMCPCache", 300f, 300f); // Every 5 minutes
