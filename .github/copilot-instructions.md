@@ -4,7 +4,7 @@ This repo is a **documentation-first architecture specification** for the BambiS
 
 ## 3-Step Work Methodology
 
-**ANALYZE** #codebase — Read the existing files to understand current structure and patterns. **Critical**: This is a spec-driven project - the markdown files ARE the implementation blueprint.
+**ANALYZE** search/codebase — Read the existing files to understand current structure and patterns. **Critical**: This is a spec-driven project - the markdown files ARE the implementation blueprint.
 **THINK** — Design simple working solution. Don't overcomplicate. Edit existing files rather than creating new ones when possible. IT MUST WORK, NOT BE PERFECT! Keep it simple, less is better. Perfect doesn't exist, just make it work.
 **TEST & FIX BUGS** — Run code, verify it works, fix any issues found
 
