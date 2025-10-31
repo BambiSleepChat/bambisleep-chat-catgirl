@@ -1,123 +1,85 @@
 ## Project Overview
 
-This is a **production Unity 6.2 LTS project** combining:
+**BambiSleep™ Church CatGirl Avatar System** - A production Unity 6.2 LTS
+project with Node.js orchestration.
 
-- **Unity C# Systems** (2,491 lines): Avatar controller, economy, multiplayer
-  networking, UI, audio, IPC bridge
-- **Node.js ↔ Unity IPC Bridge**: JSON-based stdin/stdout communication
-  protocol (see `src/unity/unity-bridge.js`)
-- **MCP Agent Tooling** (8 core servers + 6 optional): Development automation
-  via Model Context Protocol
-- **Jest Test Suite**: Real test assertions in `__tests__/` (not stubs) -
-  coverage target 80%
-- **Trademark Requirement**: Always use `BambiSleep™` (with ™) in
-  public-facing content
-- **Documentation as Code**: Markdown files contain canonical implementations to
-  copy verbatim
+**Key Technologies:**
 
-### Quick Start: 5-Minute Productivity Guide
+- **Unity 6.2 LTS** (6000.2.11f1): 7 complete C# systems (2,491 lines) with
+  NetworkBehaviour multiplayer, Unity Gaming Services (UGS) economy, XR
+  interaction toolkit
+- **Node.js 20.19.5** (Volta-pinned): IPC bridge for Unity communication via
+  JSON stdin/stdout
+- **MCP Servers** (8 core): filesystem, git, github, memory,
+  sequential-thinking, everything, brave-search, postgres
+- **Jest Testing**: 80% coverage threshold with real assertions (not stubs)
+- **Container-Ready**: Multi-stage Dockerfile → GHCR:
+  `ghcr.io/bambisleepchat/bambisleep-church`
 
-**Workflow Decision Tree** (choose your path):
+**Critical Project Rules:**
+
+1. Always use `BambiSleep™` (with ™) in public-facing content
+2. Follow emoji conventions in commits: `🦋 Add feature` (see
+   RELIGULOUS_MANTRA.md)
+3. Documentation contains **actual code** to copy verbatim, not generic advice
+4. Namespace pattern: `BambiSleep.CatGirl.{Domain}` for all Unity scripts
+
+## Quick Start Decision Tree
+
+**Choose your workflow path:**
 
 ```
-Your Task → Quick Guide
-├─ Extend Unity C# systems
-│  └─ 1. Read existing script in catgirl-avatar-project/Assets/Scripts/{domain}/
-│     2. Copy namespace pattern: BambiSleep.CatGirl.{Domain}
-│     3. Follow NetworkBehaviour lifecycle if multiplayer
-│     4. Add emoji headers: [Header("🌸 Section Name")]
-│     5. Run "Check Unity Version" task to verify Unity 6000.2.11f1
+├─ Extend Unity C# → Read existing script in Assets/Scripts/{domain}/ FIRST
+│  └─ Copy patterns: namespace BambiSleep.CatGirl.{Domain}, [Header("🌸 Name")], NetworkBehaviour lifecycle
 │
-├─ Add Node.js feature (IPC bridge)
-│  └─ 1. Review src/unity/unity-bridge.js for IPC patterns
-│     2. Add corresponding test in __tests__/unity-bridge.test.js
-│     3. Follow EventEmitter pattern for async communication
-│     4. Run `npm test` to verify 80% coverage maintained
+├─ Add Node.js feature → Review src/unity/unity-bridge.js, add test in __tests__/, run `npm test`
 │
-├─ Debug Unity Gaming Services
-│  └─ 1. Check docs/DEBUGGING.md for Unity-specific troubleshooting
-│     2. Verify UGS initialization order: UnityServices → Auth → Economy
-│     3. Check Unity Dashboard for project ID and Economy config
-│     4. Use [ContextMenu] test methods for isolated debugging
+├─ Debug Unity Gaming Services → Check docs/DEBUGGING.md, verify init order: UnityServices→Auth→Economy
 │
-├─ Use MCP servers for automation
-│  └─ 1. Run ./scripts/mcp-validate.sh to verify 8/8 servers operational
-│     2. Use filesystem MCP for creating Unity scripts with proper structure
-│     3. Use git MCP for commits with emoji conventions (🦋 for features)
-│     4. Use github MCP for creating issues linked to specific code lines
+├─ Use MCP automation → Run ./scripts/mcp-validate.sh (tests 8/8 servers operational)
 │
-└─ Build/Deploy changes
-   └─ 1. Update package.json version for semantic versioning
-      2. Run `npm test` to ensure tests pass
-      3. Use VS Code task "Build Container" for Docker builds
-      4. CI/CD auto-deploys on git tag: v{major}.{minor}.{patch}
+└─ Build/Deploy → Update package.json version, run `npm test`, use VS Code task "Build Container"
 ```
 
-**For extending Unity systems** (most common task):
+**Essential Commands:**
 
-1. Read the existing script FIRST:
-   `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs`
-2. Follow these exact patterns: proper namespace, emoji headers,
-   NetworkBehaviour lifecycle
-3. Test with VS Code task "Check Unity Version" to verify Unity 6000.2.11f1
-4. Run `npm test` to ensure Node.js integration still works
+- `npm test` - Jest with 80% coverage (fails below threshold)
+- `npm run test:watch` - TDD development mode
+- `./scripts/mcp-validate.sh` - Verify all 8 MCP servers work
+- VS Code task "Check Unity Version" - Confirms Unity 6000.2.11f1
+- VS Code task "Clean Unity Project" - Removes Library/Temp/obj directories
 
-**For debugging issues:**
+**Must-Read Documentation (in order):**
 
-- Unity errors: `docs/DEBUGGING.md` (522 lines with Unity-specific
-  troubleshooting)
-- UGS auth failures: Check initialization order (UnityServices → Auth → Economy)
-- Test failures: Review `__tests__/unity-bridge.test.js` for patterns
-- MCP issues: Run `./scripts/mcp-validate.sh` (tests 8/8 operational)
-
-### Quick Actions Reference
-
-| Task                     | Command/Location                                                                                |
-| ------------------------ | ----------------------------------------------------------------------------------------------- |
-| **Extend Unity systems** | Read `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs` FIRST, follow its patterns |
-| **Run tests**            | `npm test` (Jest with 80% coverage target) or `npm run test:watch`                              |
-| **MCP setup**            | Run `./scripts/setup-mcp.sh`, test with `./scripts/mcp-validate.sh`                             |
-| **Build/Deploy**         | VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts                                 |
-| **Architecture guide**   | `docs/development/UNITY_SETUP_GUIDE.md` (858 lines with actual C# code)                         |
-| **Debug guide**          | `docs/DEBUGGING.md` (522 lines - breakpoints, shortcuts, troubleshooting)                       |
+1. `docs/development/UNITY_SETUP_GUIDE.md` - Complete C# implementations (858
+   lines)
+2. `docs/architecture/CATGIRL.md` - System architecture & 16 Unity packages
+3. `docs/architecture/UNITY_IPC_PROTOCOL.md` - Node.js ↔ Unity communication
+   (430 lines)
+4. `docs/DEBUGGING.md` - Debugging reference (522 lines)
+5. `docs/guides/todo.md` - Implementation status
 
 ## Project Culture & Conventions
 
-**This project embraces a playful, maximalist aesthetic** inspired by "pink
-frilly platinum blonde" themes, cow powers, and Universal Machine Philosophy.
-This is NOT typical enterprise code.
+**Playful maximalist aesthetic** - pink frilly themes, cow powers (Diablo
+references), Universal Machine Philosophy. NOT typical enterprise code.
 
-### Emoji Conventions (from `RELIGULOUS_MANTRA.md`)
+**Emoji Conventions** (from RELIGULOUS_MANTRA.md):
 
-- 🌸 **Cherry Blossom**: Packages, core systems, main features
-- 🦋 **Butterfly**: Transformations, state changes, NetworkBehaviour events
-- 💎 **Gem**: High-value features, premium systems
-- 👑 **Crown**: Authority, enterprise-grade patterns
-- 🐄 **Cow**: Secret/easter egg features (Diablo secret level references)
-- 🔥 **Fire**: Performance-critical code, hot paths
-- ✨ **Sparkles**: UI polish, visual effects, frilly details
+- 🌸 Packages/core systems
+- 🦋 Transformations/NetworkBehaviour events
+- 💎 Premium features
+- � Secret cow power features
+- 🔥 Performance-critical code
 
-**Commit message format**: `🦋 Add feature description` (emoji prefix required)
+**Commit format:** `🦋 Add feature description` (emoji prefix required)
 
-### Code Organization Principles
+**Key Principles:**
 
-1. **Documentation as Code**: `docs/*.md` files contain **actual
-   implementations** to copy verbatim
-2. **MCP-First Development**: Use 8 MCP servers (filesystem, git, github,
-   memory, sequential-thinking, everything, brave-search, postgres) for all
-   workflows. Validate with `./scripts/mcp-validate.sh` (tests 8/8 operational)
-3. **100% Completion Mindset**: Follow the "10/10 operational" philosophy - no
-   half-implemented features
-4. **Trademark Discipline**: Always use `BambiSleep™` (with ™) in user-facing
-   content
-
-### "Cow Powers" & Secret Features
-
-- References to "cow powers" = easter eggs/hidden features (Diablo secret cow
-  level homage)
-- Gambling systems must have 5% house edge (see `UniversalBankingSystem.cs:299`)
-- Item rarity: Common→Uncommon→Rare→Epic→Legendary→**Divine Cow Crown** (secret
-  tier)
+1. Documentation = actual code to copy (not generic advice)
+2. MCP-first development (8 servers validated via `./scripts/mcp-validate.sh`)
+3. 100% completion mindset (no half-implementations)
+4. BambiSleep™ trademark in all public content
 
 ## Project Structure
 
@@ -851,6 +813,155 @@ Instead of C# styling, use USS files for cleaner separation:
 - **Name elements** for USS selector targeting
 - **StyleLength** units: Percent, Pixel, Auto
 
+### 13. XR Integration - Unity 6.2 XR Interaction Toolkit
+
+**XR Package Requirements** (from `Packages/manifest.json`):
+
+```json
+{
+  "com.unity.xr.interaction.toolkit": "3.0.5",
+  "com.unity.xr.openxr": "1.11.0",
+  "com.unity.xr.hands": "1.5.0",
+  "com.unity.animation.rigging": "1.3.1"
+}
+```
+
+**Eye Tracking Implementation** (OpenXR standard):
+
+```csharp
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR;
+
+namespace BambiSleep.CatGirl.XR
+{
+    public class CatgirlEyeTracking : MonoBehaviour
+    {
+        [Header("👁️ Eye Tracking Configuration")]
+        [SerializeField] private Transform leftEyeBone;
+        [SerializeField] private Transform rightEyeBone;
+        [SerializeField] private float eyeRotationSpeed = 10f;
+
+        private InputDevice eyeTrackingDevice;
+
+        void Start()
+        {
+            eyeTrackingDevice = InputDevices.GetDeviceAtXRNode(XRNode.CenterEye);
+        }
+
+        void Update()
+        {
+            if (eyeTrackingDevice.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 gazePosition))
+            {
+                Vector3 gazeDirection = (gazePosition - transform.position).normalized;
+                Quaternion targetRotation = Quaternion.LookRotation(gazeDirection);
+
+                leftEyeBone.rotation = Quaternion.Slerp(leftEyeBone.rotation, targetRotation, Time.deltaTime * eyeRotationSpeed);
+                rightEyeBone.rotation = Quaternion.Slerp(rightEyeBone.rotation, targetRotation, Time.deltaTime * eyeRotationSpeed);
+            }
+        }
+    }
+}
+```
+
+**Hand Tracking with Paw Gestures**:
+
+```csharp
+using UnityEngine.XR.Hands;
+using UnityEngine.Animations.Rigging;
+
+namespace BambiSleep.CatGirl.XR
+{
+    public class CatgirlHandTracking : MonoBehaviour
+    {
+        [Header("🐾 Hand Tracking Configuration")]
+        [SerializeField] private Rig animationRig;
+        [SerializeField] private Transform[] clawBones;
+        [SerializeField] private float kneadingThreshold = 0.7f;
+
+        private XRHandSubsystem handSubsystem;
+        private bool isKneading = false;
+
+        void Start()
+        {
+            var subsystems = new List<XRHandSubsystem>();
+            SubsystemManager.GetSubsystems(subsystems);
+            if (subsystems.Count > 0) handSubsystem = subsystems[0];
+        }
+
+        void Update()
+        {
+            if (handSubsystem == null) return;
+
+            var rightHand = handSubsystem.rightHand;
+            if (rightHand.isTracked)
+            {
+                UpdateClawPositions(rightHand);
+                DetectKneadingGesture(rightHand);
+            }
+        }
+
+        void UpdateClawPositions(XRHand hand)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                var fingerTip = hand.GetJoint(XRHandJointID.ThumbTip + i);
+                if (fingerTip.TryGetPose(out var pose))
+                {
+                    clawBones[i].position = pose.position;
+                    clawBones[i].rotation = pose.rotation;
+                }
+            }
+        }
+
+        void DetectKneadingGesture(XRHand hand)
+        {
+            float curvature = CalculateFingerCurvature(hand);
+            if (curvature > kneadingThreshold && !isKneading) StartKneading();
+            else if (curvature < kneadingThreshold && isKneading) StopKneading();
+        }
+
+        float CalculateFingerCurvature(XRHand hand)
+        {
+            float totalCurvature = 0f;
+            for (int i = 0; i < 5; i++)
+            {
+                var tip = hand.GetJoint(XRHandJointID.ThumbTip + i);
+                var proximal = hand.GetJoint(XRHandJointID.ThumbProximal + i);
+                if (tip.TryGetPose(out var tipPose) && proximal.TryGetPose(out var proximalPose))
+                {
+                    float distance = Vector3.Distance(tipPose.position, proximalPose.position);
+                    totalCurvature += Mathf.Clamp01(1f - (distance / 0.1f));
+                }
+            }
+            return totalCurvature / 5f;
+        }
+
+        void StartKneading()
+        {
+            isKneading = true;
+            animationRig.weight = 1.0f;
+            AudioManager.Instance.PlayRandomPurr();
+            // Send haptic feedback
+            InputDevices.GetDeviceAtXRNode(XRNode.RightHand).SendHapticImpulse(0, 0.3f, 1.0f);
+        }
+
+        void StopKneading()
+        {
+            isKneading = false;
+            animationRig.weight = 0f;
+        }
+    }
+}
+```
+
+**Best Practices**:
+
+- **OpenXR** for cross-platform VR/AR compatibility
+- **Animation Rigging** for dynamic IK-based hand positioning
+- **Haptic feedback** enhances immersion (purring, scratching sensations)
+- **Foveated rendering** for performance optimization
+- **Confidence scoring** to handle tracking loss gracefully (check `isTracked`)
+
 ## Development Workflows
 
 ### Critical Gotchas & Debugging
@@ -1522,3 +1633,154 @@ public class IPCBridge : MonoBehaviour {
 
 **Reference**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol
 spec with all message types
+
+---
+
+## 🎯 Development Cheat Sheet
+
+### Unity C# Quick Reference
+
+**Creating a New System**:
+
+1. Copy namespace pattern: `namespace BambiSleep.CatGirl.{Domain}`
+2. Add emoji headers: `[Header("🌸 Section Name")]`
+3. For multiplayer: extend `NetworkBehaviour`, implement
+   `OnNetworkSpawn/OnNetworkDespawn`
+4. Cache animator hashes:
+   `private static readonly int Speed = Animator.StringToHash("Speed");`
+5. Use async/await for UGS: `await UnityServices.InitializeAsync();`
+
+**Common Import Statements**:
+
+```csharp
+using Unity.Netcode; // NetworkBehaviour, ServerRpc, ClientRpc
+using Unity.Services.Core; // UnityServices
+using Unity.Services.Authentication; // AuthenticationService
+using Unity.Services.Economy; // EconomyService
+using UnityEngine.XR.Interaction.Toolkit; // XR features
+using UnityEngine.UI.Toolkit; // VisualElement, UIDocument
+```
+
+### MCP Command Patterns
+
+```bash
+# Create Unity script with proper structure
+mcp filesystem create_file \
+  --path "Assets/Scripts/Character/NewAbility.cs" \
+  --namespace "BambiSleep.CatGirl.Character"
+
+# Commit with emoji convention
+git commit -m "🦋 Add butterfly flight ability"
+
+# Create GitHub issue linked to code
+mcp github create_issue \
+  --title "Implement tail collision detection" \
+  --file "TailPhysicsController.cs:45"
+
+# Remember project context
+mcp memory store "CatgirlController uses NetworkBehaviour pattern"
+
+# Search Unity docs
+mcp brave-search "Unity Netcode NetworkVariable synchronization"
+```
+
+### Testing Quick Commands
+
+```bash
+# Run all tests with coverage
+npm test
+
+# Watch mode for TDD
+npm run test:watch
+
+# Test specific file
+npm test -- unity-bridge.test.js
+
+# Generate coverage report
+npm test -- --coverage
+```
+
+### Docker Build & Deploy
+
+```bash
+# Build with proper labels
+docker build \
+  -t ghcr.io/bambisleepchat/bambisleep-church:v1.0.0 \
+  --label org.bambi.unity-version="6000.2.11f1" \
+  .
+
+# Test locally
+docker run --rm bambisleep-church:v1.0.0 npm test
+
+# Deploy via git tag (CI/CD auto-pushes)
+git tag -a v1.0.0 -m "🌸 Production release"
+git push origin v1.0.0
+```
+
+### Unity Editor Shortcuts
+
+- `Ctrl+Shift+F`: Search across all scripts
+- `Ctrl+K`: Open Console for errors
+- `F5`: Play mode (test multiplayer locally)
+- `Ctrl+9`: Animation window
+- `Ctrl+7`: Profiler (check performance)
+- `Alt+Shift+C`: Create new C# script
+
+### Debugging Workflow
+
+1. **Unity errors**: Check `docs/DEBUGGING.md` (522 lines)
+2. **UGS auth failures**: Verify init order (UnityServices → Auth → Economy)
+3. **Network sync issues**: Check `IsOwner` before modifying NetworkVariables
+4. **Animation not playing**: Verify StringToHash cached, check Animator
+   transitions
+5. **Test failures**: Run `npm run test:watch` to see live failures
+6. **MCP not working**: Run `./scripts/mcp-validate.sh` (tests 8/8 servers)
+
+---
+
+## 📚 Essential File References
+
+| Category          | File                      | Lines | Purpose                                 |
+| ----------------- | ------------------------- | ----- | --------------------------------------- |
+| **Unity C# Core** | CatgirlController.cs      | 327   | Avatar controller with NetworkBehaviour |
+|                   | AudioManager.cs           | 342   | Singleton audio system                  |
+|                   | InventorySystem.cs        | 270   | UGS Economy integration                 |
+|                   | UniversalBankingSystem.cs | 371   | Multi-currency gambling/auctions        |
+|                   | InventoryUI.cs            | 322   | UI Toolkit interface                    |
+|                   | IPCBridge.cs              | 541   | Unity ↔ Node.js IPC                    |
+| **Node.js**       | unity-bridge.js           | 129   | EventEmitter-based IPC bridge           |
+| **Tests**         | unity-bridge.test.js      | 183   | Jest tests with real assertions         |
+| **Documentation** | UNITY_SETUP_GUIDE.md      | 858   | Complete C# implementations             |
+|                   | CATGIRL.md                | 683   | System architecture & XR specs          |
+|                   | UNITY_IPC_PROTOCOL.md     | 430   | IPC message protocol                    |
+|                   | DEBUGGING.md              | 522   | Complete debug reference                |
+|                   | RELIGULOUS_MANTRA.md      | 300+  | Emoji conventions & philosophy          |
+
+---
+
+## 🦋 Final Notes for AI Agents
+
+**This project is PRODUCTION-READY** with 7 complete Unity C# systems (2,491
+lines). When extending:
+
+1. **Read existing code FIRST** - All patterns are established in current
+   scripts
+2. **Follow emoji conventions** - 🦋 transformations, 🌸 packages, 💎 premium
+   features
+3. **Test immediately** - Run `npm test` after Node.js changes
+4. **Use MCP servers** - Validate with `./scripts/mcp-validate.sh` (8/8
+   operational)
+5. **Maintain 80% coverage** - Jest enforces thresholds
+6. **Always use BambiSleep™** - Trademark required in public content
+7. **Cow powers are secret** - Easter eggs for Diablo homage
+8. **Pink frilly maximalism** - Not typical enterprise code, embrace the
+   aesthetic
+
+**When stuck**: Check `docs/DEBUGGING.md` → Run MCP validate → Read scenario
+examples → Ask about specific patterns
+
+**Remember**: Documentation contains ACTUAL implementations to copy verbatim,
+not generic advice. This guide is designed for immediate productivity with zero
+ramp-up time.
+
+🌸 Happy coding in the BambiSleep™ Church! 🌸
