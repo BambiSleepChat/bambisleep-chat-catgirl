@@ -27,32 +27,27 @@ RUN apk add --no-cache \
 # Set working directory
 WORKDIR /app
 
-# Copy package configuration
+# Copy package configuration first for better layer caching
 COPY package*.json ./
 
-# Install Node.js dependencies
-RUN npm ci --only=production
-
-# Install Volta for Node.js version management
-RUN curl https://get.volta.sh | bash
-ENV VOLTA_HOME /root/.volta
-ENV PATH $VOLTA_HOME/bin:$PATH
+# Install Node.js dependencies (use npm install since package-lock.json is not tracked)
+RUN npm install --production && npm cache clean --force
 
 # Install UV/UVX for Python MCP servers
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.cargo/bin:$PATH"
 
-# Copy project files
+# Copy project files (after dependencies for better caching)
 COPY . .
+
+# Make scripts executable
+RUN chmod +x scripts/*.sh
 
 # Create MCP configuration directory
 RUN mkdir -p /root/.config/mcp
 
-# Copy MCP setup script and make executable
-RUN chmod +x setup-mcp.sh
-
-# Install MCP servers
-RUN npm run mcp:setup || echo "MCP setup requires interactive configuration"
+# Install MCP servers (non-interactive setup)
+RUN npm run mcp:setup || echo "⚠️  MCP setup requires interactive configuration - run manually"
 
 # Create Unity project directory
 RUN mkdir -p /app/unity-projects
@@ -60,23 +55,23 @@ RUN mkdir -p /app/unity-projects
 # Expose ports for development
 EXPOSE 3000 8080
 
-# Health check
+# Health check - verify Node.js and npm are functional
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD node --version || exit 1
+    CMD node --version && npm --version || exit 1
 
 # Default command
 CMD ["npm", "run", "dev"]
 
 # 🌈 Container Usage Instructions:
-# 
+#
 # Build: docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .
 # Run:   docker run -p 3000:3000 -p 8080:8080 -v $(pwd):/app ghcr.io/bambisleepchat/bambisleep-church:latest
-# 
+#
 # 💖 This container includes:
 # - Node.js 20 LTS with Volta version management
 # - 8 MCP servers for development automation
 # - Unity 6.2 project structure templates
 # - BambiSleep™ trademark compliance
 # - Maximum kawaii development environment
-# 
+#
 # NYAN NYAN NYAN! 🌸💎✨

@@ -95,7 +95,7 @@
       "type": "shell",
       "command": "bash",
       "args": [
-        "${workspaceFolder}/setup-mcp.sh"
+        "${workspaceFolder}/scripts/setup-mcp.sh"
       ],
       "group": "none",
       "presentation": {

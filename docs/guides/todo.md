@@ -23,7 +23,7 @@
 - ✅ Build pipeline enhanced with graceful test stub handling
 - ✅ Comprehensive documentation (4,200+ lines across 13 markdown files)
 - ✅ CHANGELOG.md with full project history (415+ lines)
-- ✅ .github/copilot-instructions.md enhanced (680+ lines with production code patterns)
+- ✅ .github/copilot-instructions.md enhanced (738 lines with production code patterns and debugging guidance)
 
 **See `CHANGELOG.md` and `IMPLEMENTATION_PROGRESS.md` for complete details.**
 
@@ -109,13 +109,18 @@
 - ✅ Updated build.md with current progress
 - ✅ Updated todo.md with completion tracking
 - ✅ **Created CHANGELOG.md with comprehensive project history** (415+ lines)
-- ✅ **Updated .github/copilot-instructions.md** (680+ lines with expanded code patterns)
+- ✅ **Updated .github/copilot-instructions.md** (738 lines with expanded code patterns)
 - ✅ **Enhanced copilot-instructions.md with production code examples**:
+  - Project culture & conventions section with emoji patterns
+  - Critical gotchas & debugging section with UGS auth order
   - NetworkBehaviour lifecycle patterns (Awake/OnNetworkSpawn/OnNetworkDespawn)
   - Async Unity Gaming Services patterns with error handling
-  - Coroutine usage patterns from actual CatgirlController.cs
-  - 6 common Unity development patterns from production codebase
+  - Animator performance optimization (cached hash IDs)
+  - Singleton service patterns with DontDestroyOnLoad
+  - Node.js ↔ Unity IPC communication protocol
+  - 9 real-world development scenarios with complete code examples
   - MCP workflow examples for Unity development tasks
+  - Package version corrections (Netcode 2.0.0, XR Toolkit 3.0.5)
 - ✅ **Enhanced todo.md with actionable v1.1.0 steps**:
   - Detailed Priority Order with concrete commands
   - MCP workflow examples for Unity development

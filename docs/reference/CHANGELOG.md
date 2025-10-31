@@ -22,6 +22,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2025-10-31 - "Documentation Excellence & Debugging Guidance"
+
+### 🎉 Improvements
+- **Enhanced AI Agent Instructions** - Comprehensive copilot-instructions.md updates
+- **Package Version Accuracy** - Corrected Unity package versions to match actual manifest.json
+- **Developer Experience** - Added critical debugging sections and gotchas documentation
+
+### ✅ Updated - AI Coding Agent Instructions
+
+#### .github/copilot-instructions.md (679 → 738 lines, +8.7%)
+- **NEW: Project Culture & Conventions Section**
+  - Documented "pink frilly platinum blonde" aesthetic and Universal Machine Philosophy
+  - Emoji conventions from RELIGULOUS_MANTRA.md:
+    - 🌸 Cherry Blossom (packages, core systems)
+    - 🦋 Butterfly (transformations, NetworkBehaviour events)
+    - 💎 Gem (high-value features)
+    - 👑 Crown (enterprise patterns)
+    - 🐄 Cow (secret features/easter eggs)
+    - 🔥 Fire (performance-critical code)
+    - ✨ Sparkles (UI polish, visual effects)
+  - Commit message format requirement: `🦋 Add feature description`
+  - Code organization principles (Documentation as Code, MCP-First, 100% Completion)
+  - "Cow Powers" & secret features explanation (Diablo secret level homage)
+
+- **NEW: Critical Gotchas & Debugging Section**
+  - Unity Gaming Services authentication order (common failure point)
+  - NetworkBehaviour ownership rules for client/server authority
+  - Test stubs status and CI/CD handling
+  - Unity project corruption recovery commands
+
+- **FIXED: Unity Package Versions**
+  - `com.unity.netcode.gameobjects`: 1.11.0 → **2.0.0** (actual version)
+  - `com.unity.xr.interaction.toolkit`: 3.0.7 → **3.0.5** (actual version)
+  - Added missing packages: `com.unity.addressables` 2.3.1, `com.unity.visualeffectgraph` 16.0.6, `com.unity.services.relay` 1.1.3
+
+### 📝 Changed
+
+#### Documentation Updates
+- **todo.md** - Updated copilot-instructions.md line count from 680 → 738 lines
+- **todo.md** - Enhanced production code examples list with 10 specific pattern categories
+
+#### Infrastructure Improvements
+- **Dockerfile** - Optimized layer caching by copying package.json before source files
+- **Dockerfile** - Enhanced health check to verify both Node.js and npm
+- **Dockerfile** - Improved npm cache cleanup (added `npm cache clean --force`)
+- **Dockerfile** - Better emoji consistency in MCP setup warning message
+
+#### Security & Patterns
+- **.gitignore** - Added Unity iOS build artifacts (*.ipa)
+- **.gitignore** - Added .VC.VC.opendb pattern for Visual Studio
+- **.gitignore** - Added .mcp-* pattern for MCP temporary files
+- **.gitignore** - Added *.pyc pattern for Python bytecode
+- **.gitignore** - Added NPX cache directory (.npm/_npx/)
+- **.gitignore** - Added .env.example exception to allow sample env files
+- **.gitignore** - Added .ghcr-token pattern for GitHub Container Registry tokens
+- **.gitignore** - Added Unity Gaming Services Settings.json to ignored credentials
+- **.gitignore** - Fixed duplicate UGS credentials section
+
+### 🎯 Impact
+
+- **AI Agent Onboarding**: Reduced ramp-up time by documenting unique project patterns
+- **Debugging Efficiency**: Common UGS auth failures now documented with exact fix
+- **Package Accuracy**: No more confusion between specified vs actual Unity package versions
+- **Cultural Context**: AI agents now understand the playful, maximalist aesthetic
+
+---
+
 ## [1.0.0] - 2025-10-31 - "Pink Frilly Foundation Complete"
 
 ### 🎉 Major Milestones

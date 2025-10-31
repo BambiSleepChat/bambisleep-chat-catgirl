@@ -17,6 +17,35 @@ This is a **production Unity 6.2 LTS project** combining:
 | **Build/Deploy**         | VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts                                 |
 | **Architecture guide**   | `docs/development/UNITY_SETUP_GUIDE.md` (858 lines with actual C# code)                         |
 
+## Project Culture & Conventions
+
+**This project embraces a playful, maximalist aesthetic** inspired by "pink frilly platinum blonde" themes, cow powers, and Universal Machine Philosophy. This is NOT typical enterprise code.
+
+### Emoji Conventions (from `RELIGULOUS_MANTRA.md`)
+
+- 🌸 **Cherry Blossom**: Packages, core systems, main features
+- 🦋 **Butterfly**: Transformations, state changes, NetworkBehaviour events
+- 💎 **Gem**: High-value features, premium systems
+- 👑 **Crown**: Authority, enterprise-grade patterns
+- 🐄 **Cow**: Secret/easter egg features (Diablo secret level references)
+- 🔥 **Fire**: Performance-critical code, hot paths
+- ✨ **Sparkles**: UI polish, visual effects, frilly details
+
+**Commit message format**: `🦋 Add feature description` (emoji prefix required)
+
+### Code Organization Principles
+
+1. **Documentation as Code**: `docs/*.md` files contain **actual implementations** to copy verbatim
+2. **MCP-First Development**: Use 8 MCP servers (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres) for all workflows
+3. **100% Completion Mindset**: Follow the "8/8 operational" philosophy - no half-implemented features
+4. **Trademark Discipline**: Always use `BambiSleep™` (with ™) in user-facing content
+
+### "Cow Powers" & Secret Features
+
+- References to "cow powers" = easter eggs/hidden features (Diablo secret cow level homage)
+- Gambling systems must have 5% house edge (see `UniversalBankingSystem.cs:299`)
+- Item rarity: Common→Uncommon→Rare→Epic→Legendary→**Divine Cow Crown** (secret tier)
+
 ## Project Structure
 
 ```
@@ -149,9 +178,16 @@ private void Awake()
 
 - `com.unity.services.economy` 3.4.2 (currency system)
 - `com.unity.services.authentication` 3.3.4 (player identity)
-- `com.unity.netcode.gameobjects` 1.11.0 (multiplayer)
+- `com.unity.netcode.gameobjects` 2.0.0 (multiplayer networking)
 - `com.unity.services.lobby` 1.2.2 (matchmaking)
-- `com.unity.xr.interaction.toolkit` 3.0.7 (XR support)
+- `com.unity.services.relay` 1.1.3 (NAT traversal)
+- `com.unity.xr.interaction.toolkit` 3.0.5 (XR support)
+- `com.unity.addressables` 2.3.1 (asset management)
+- `com.unity.visualeffectgraph` 16.0.6 (particle systems)
+- `com.unity.ui.toolkit` 2.0.0 (modern UI system used by InventoryUI.cs)
+- `com.unity.animation.rigging` 1.3.1 (procedural animation)
+- `com.unity.cinemachine` 2.10.1 (camera system)
+- `com.unity.timeline` 1.8.7 (cutscenes & animation sequences)
 
 ### 6. Unity IPC Protocol (Node.js ↔ Unity Communication)
 
@@ -208,15 +244,60 @@ void SendMessage(string type, object data) {
 
 ## Development Workflows
 
+### Critical Gotchas & Debugging
+
+**Unity Gaming Services (UGS) Authentication Order**
+
+```csharp
+// MUST initialize in this exact order (common failure point):
+await UnityServices.InitializeAsync();         // 1. Core services first
+await AuthenticationService.Instance.SignInAnonymouslyAsync();  // 2. Auth second
+await EconomyService.Instance.PlayerBalances.GetBalancesAsync(); // 3. Economy last
+```
+
+**NetworkBehaviour Ownership Rules**
+
+- `IsOwner` checks required before modifying NetworkVariables on client
+- Use `[ServerRpc]` for server-authoritative actions (e.g., placing bids, spawning items)
+- Always unsubscribe from `NetworkVariable.OnValueChanged` in `OnNetworkDespawn()`
+
+**Test Stubs vs Real Tests**
+
+- **CRITICAL**: `npm test` currently returns echo stubs - NO real tests exist yet
+- CI/CD continues on test failure (`continue-on-error: true`)
+- Real test framework (Jest/Mocha) planned but not implemented (see `todo.md`)
+- Test coverage reports to Codecov always pass (stub implementation)
+- When implementing features, tests must be added manually - do NOT assume they exist
+
+**Unity Project Corruption Recovery**
+
+```bash
+# Use VS Code Task: "Clean Unity Project" or run:
+rm -rf catgirl-avatar-project/{Library,Temp,obj}
+# Then reopen project in Unity Editor to regenerate
+```
+
+**Git Tracking & .gitignore Rules**
+
+- Unity `Library/`, `Temp/`, `obj/`, `Builds/`, `Logs/`, `UserSettings/` are ignored
+- All `.csproj`, `.sln`, `.suo` files ignored (Unity regenerates these)
+- `node_modules/` and package lock files ignored
+- Docker volumes and container data excluded
+- Keep: `Assets/`, `Packages/`, `ProjectSettings/` tracked in git
+- **Meta files**: Unity `.meta` files ARE tracked (critical for asset references)
+
 ### MCP Environment (8 Servers)
 
 - **Setup**: Run `./setup-mcp.sh` (installs all servers)
 - **Validation**: Run `./mcp-validate.sh` (tests 8/8 operational)
 - **Config**: `.vscode/settings.json` (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres)
+- **Unity Integration**: VS Code setting `"unity.projectPath"` points to `catgirl-avatar-project/`
 - **Use cases**:
   - Create Unity scripts with proper namespaces (filesystem MCP)
   - Commit with emoji conventions (git MCP): `git commit -m "🦋 Add butterfly flight"`
   - Create GitHub issues linked to code (github MCP)
+  - Remember project context across sessions (memory MCP)
+  - Search web for Unity API documentation (brave-search MCP)
 
 ### Build & Deploy Commands
 

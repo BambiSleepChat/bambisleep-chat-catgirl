@@ -12,18 +12,21 @@
         "npm": "10.9.4"
     },
     "scripts": {
-        "start": "echo '🌸 BambiSleep™ CatGirl Avatar System Ready! 🌸'",
+        "start": "node index.js",
         "test": "echo '💎 Running tests with 100% coverage requirement...' && npm run test:coverage",
         "test:coverage": "echo '📊 Coverage: 100% (as required by Sacred Laws)'",
         "build": "echo '🦋 Building universal catgirl distribution...' && npm run build:universal",
         "build:universal": "echo '✨ Universal build complete - Ready for all platforms!'",
         "deploy": "echo '👑 Deploying in AIGF mode...' && npm run deploy:aigf-mode",
         "deploy:aigf-mode": "echo '💖 AI Girlfriend deployment mode activated!'",
-        "mcp:setup": "echo '🔧 Setting up MCP development environment...' && npm run mcp:install",
-        "mcp:install": "echo '📦 Installing 8 sacred MCP servers...'",
+        "mcp:setup": "bash scripts/setup-mcp.sh",
+        "mcp:validate": "bash scripts/mcp-validate.sh",
         "unity:setup": "echo '🎮 Initializing Unity 6.2 LTS project structure...'",
-        "container:build": "echo '🐳 Building container with GHCR labels...'",
+        "unity:debug": "bash scripts/setup-unity-debug.sh",
+        "unity:launch": "bash scripts/launch-unity-debug.sh",
+        "container:build": "docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .",
         "dev": "echo '🌈 Development mode - All MCP servers online!'",
+        "docs:verify": "bash scripts/verify-docs-structure.sh",
         "postinstall": "echo '🌸 BambiSleep™ dependencies installed! Nyan nyan nyan! 🌸'"
     },
     "keywords": [

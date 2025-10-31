@@ -4,7 +4,7 @@
 # Unity Generated Files
 # ===================================
 
-# Unity folders
+# Unity folders (case-insensitive patterns)
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -19,6 +19,7 @@
 *.mdb
 *.opendb
 *.VC.db
+*.VC.VC.opendb
 
 # Unity-specific
 *.pidb.meta
@@ -29,6 +30,7 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
+*.ipa
 
 # Crashlytics generated files
 crashlytics-build.properties
@@ -273,15 +275,20 @@ UnityAnalytics/
 # MCP server logs
 .mcp/
 mcp-logs/
+.mcp-*
 
 # UV/UVX cache (Python MCP servers)
 .uv/
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # Volta cache
 .volta/
+
+# NPX cache
+.npm/_npx/
 
 # ===================================
 # Project Specific
@@ -306,28 +313,9 @@ audio-cache/
 # *.mp3
 # *.ogg
 
-# Unity Gaming Services credentials (NEVER commit these!)
-unity-services-config.json
+# Unity Gaming Services credentials
 ProjectSettings/Packages/com.unity.services.core/UserCredentials.json
-
-# ===================================
-# Security / Secrets
-# ===================================
-
-# API keys and secrets
-.env
-.env.*
-secrets.json
-appsettings.Development.json
-*.key
-*.pem
-*.pfx
-*.p12
-*.cert
-
-# GitHub tokens
-.github-token
-.gh-token
+ProjectSettings/Packages/com.unity.services.core/Settings.json
 
 # ===================================
 # Documentation Build
@@ -356,6 +344,17 @@ site/
 Thumbs.db
 
 # ===================================
+# Project Organization
+# ===================================
+
+# Source code is tracked
+!src/**/*.js
+!scripts/**/*.sh
+
+# Keep documentation organized
+!docs/**/*.md
+
+# ===================================
 # Keep These Files
 # ===================================
 
@@ -366,3 +365,4 @@ Thumbs.db
 !LICENSE
 !README.md
 !CHANGELOG.md
+!index.js
