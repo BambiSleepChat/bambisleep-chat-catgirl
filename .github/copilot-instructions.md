@@ -6,7 +6,7 @@ This is a **production Unity 6.2 LTS project** combining:
   networking, UI, audio, IPC bridge
 - **Node.js ↔ Unity IPC Bridge**: JSON-based stdin/stdout communication
   protocol
-- **MCP Agent Tooling** (8 servers): Development automation via Model Context
+- **MCP Agent Tooling** (10 servers): Development automation via Model Context
   Protocol
 - **Trademark Requirement**: Always use `BambiSleep™` (with ™) in
   public-facing content
@@ -21,6 +21,7 @@ This is a **production Unity 6.2 LTS project** combining:
 | **MCP setup**            | Run `./setup-mcp.sh`, test with `./mcp-validate.sh`                                             |
 | **Build/Deploy**         | VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts                                 |
 | **Architecture guide**   | `docs/development/UNITY_SETUP_GUIDE.md` (858 lines with actual C# code)                         |
+| **Debug guide**          | `docs/DEBUGGING.md` (522 lines - breakpoints, shortcuts, troubleshooting)                       |
 
 ## Project Culture & Conventions
 
@@ -44,10 +45,10 @@ This is NOT typical enterprise code.
 
 1. **Documentation as Code**: `docs/*.md` files contain **actual
    implementations** to copy verbatim
-2. **MCP-First Development**: Use 8 MCP servers (filesystem, git, github,
-   memory, sequential-thinking, everything, brave-search, postgres) for all
-   workflows
-3. **100% Completion Mindset**: Follow the "8/8 operational" philosophy - no
+2. **MCP-First Development**: Use 10 MCP servers (filesystem, git, github,
+   memory, sequential-thinking, everything, brave-search, postgres, stripe,
+   fetch) for all workflows
+3. **100% Completion Mindset**: Follow the "10/10 operational" philosophy - no
    half-implemented features
 4. **Trademark Discipline**: Always use `BambiSleep™` (with ™) in user-facing
    content
@@ -75,16 +76,17 @@ bambisleep-chat-catgirl/
 │   │   └── IPC/IPCBridge.cs         # 541 lines - Unity ↔ Node.js IPC
 │   ├── Packages/manifest.json       # 16 Unity packages (UGS, Netcode, XR)
 │   └── ProjectSettings/ProjectVersion.txt
-├── docs/                            # 4,200+ lines documentation
+├── docs/                            # Documentation (consolidated)
 │   ├── architecture/                # CATGIRL.md (682), UNITY_IPC_PROTOCOL.md (430)
 │   ├── development/                 # UNITY_SETUP_GUIDE.md (858 - READ THIS)
-│   └── guides/                      # build.md, todo.md
+│   ├── guides/                      # build.md, todo.md
+│   └── DEBUGGING.md                 # 522 lines - complete debug reference
 ├── .github/workflows/build.yml      # CI/CD with 7 jobs
 ├── .vscode/                         # MCP integration + 8 tasks
 ├── Dockerfile                       # GHCR: bambisleepchat/bambisleep-church
 ├── package.json                     # Node.js 20.19.5 (Volta pinned)
 ├── setup-mcp.sh                     # MCP server installation
-└── mcp-validate.sh                  # Test all 8 MCP servers
+└── mcp-validate.sh                  # Test all 10 MCP servers
 ```
 
 **Essential Documentation** (read in this order):
@@ -96,6 +98,8 @@ bambisleep-chat-catgirl/
 4. `docs/architecture/RELIGULOUS_MANTRA.md` - Emoji conventions & build
    philosophy
 5. `docs/guides/todo.md` - Implementation status (complete vs in-progress)
+6. `docs/DEBUGGING.md` - Complete debugging reference (breakpoints, shortcuts,
+   troubleshooting)
 
 ## Critical Unity C# Patterns
 
