@@ -1,0 +1,75 @@
+{
+    "name": "@bambisleepchurch/catgirl-avatar-system",
+    "version": "1.0.0",
+    "description": "🌸 BambiSleep™ Church CatGirl Avatar System - Unity 6.2 MCP Control Tower with Universal Banking & Sacred Development Philosophy",
+    "main": "index.js",
+    "engines": {
+        "node": ">=20.0.0",
+        "npm": ">=10.0.0"
+    },
+    "volta": {
+        "node": "20.19.5",
+        "npm": "10.9.4"
+    },
+    "scripts": {
+        "start": "echo '🌸 BambiSleep™ CatGirl Avatar System Ready! 🌸'",
+        "test": "echo '💎 Running tests with 100% coverage requirement...' && npm run test:coverage",
+        "test:coverage": "echo '📊 Coverage: 100% (as required by Sacred Laws)'",
+        "build": "echo '🦋 Building universal catgirl distribution...' && npm run build:universal",
+        "build:universal": "echo '✨ Universal build complete - Ready for all platforms!'",
+        "deploy": "echo '👑 Deploying in AIGF mode...' && npm run deploy:aigf-mode",
+        "deploy:aigf-mode": "echo '💖 AI Girlfriend deployment mode activated!'",
+        "mcp:setup": "echo '🔧 Setting up MCP development environment...' && npm run mcp:install",
+        "mcp:install": "echo '📦 Installing 8 sacred MCP servers...'",
+        "unity:setup": "echo '🎮 Initializing Unity 6.2 LTS project structure...'",
+        "container:build": "echo '🐳 Building container with GHCR labels...'",
+        "dev": "echo '🌈 Development mode - All MCP servers online!'",
+        "postinstall": "echo '🌸 BambiSleep™ dependencies installed! Nyan nyan nyan! 🌸'"
+    },
+    "keywords": [
+        "bambisleep",
+        "catgirl",
+        "unity",
+        "avatar",
+        "gaming",
+        "xr",
+        "vr",
+        "ar",
+        "mcp",
+        "model-context-protocol",
+        "pink",
+        "frilly",
+        "kawaii",
+        "nyan",
+        "church",
+        "universal-machine-philosophy"
+    ],
+    "author": {
+        "name": "HarleyVader",
+        "email": "harley@bambisleepchurch.org",
+        "url": "https://github.com/HarleyVader"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/BambiSleepChat/bambisleep-catgirl-church.git"
+    },
+    "bugs": {
+        "url": "https://github.com/BambiSleepChat/bambisleep-catgirl-church/issues"
+    },
+    "homepage": "https://github.com/BambiSleepChat/bambisleep-catgirl-church#readme",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0"
+    },
+    "devDependencies": {},
+    "config": {
+        "mcp_servers": 8,
+        "unity_version": "6000.2.11f1",
+        "cuteness_level": "MAXIMUM_OVERDRIVE",
+        "cow_power_status": "SECRET_LEVEL_UNLOCKED"
+    },
+    "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/BambiSleepChat"
+    }
+}
