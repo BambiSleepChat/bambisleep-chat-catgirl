@@ -1,47 +1,43 @@
-## Quick orientation for AI coding agents
+## Quick Orientation for AI Coding Agents
 
-This repo is a **documentation-first architecture specification** for the BambiSleep™ CatGirl Unity avatar system with MCP tooling integration. Unlike typical code repositories, the "source of truth" lives in comprehensive markdown specifications that define everything from Unity C# class structure to container orchestration patterns.
+**⚠️ CRITICAL**: This is a **working Unity 6.2 LTS project** with 1,950+ lines of production C# code. This is NOT a concept project - the Unity systems exist and are complete. The markdown documentation contains canonical implementations to use verbatim, not aspirational suggestions.
 
-### Quick Reference: Essential Files
+### Fast Start (Read This First!)
 
-**Documentation** (organized in `docs/` folder):
+**To extend Unity systems**: Read the complete implementation in `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs` FIRST, then follow its patterns exactly. All classes use `BambiSleep.CatGirl.{Domain}` namespace and `[Header("🌸 Section")]` attributes.
 
-- `docs/architecture/CATGIRL.md` (682 lines) — Complete avatar system specification
-- `docs/development/UNITY_SETUP_GUIDE.md` (858 lines) — Full C# implementations, Unity packages
-- `docs/development/MCP_SETUP_GUIDE.md` (329 lines) — 8 MCP servers configuration
-- `docs/architecture/RELIGULOUS_MANTRA.md` (112 lines) — Sacred Laws, emoji patterns, philosophy
-- `docs/architecture/CONTAINER_ORGANIZATION.md` — Docker/GHCR standards, trademark requirements
-- `docs/guides/build.md` — Build instructions and workflows
-- `docs/guides/todo.md` — Implementation status and pending work
-- `docs/reference/CHANGELOG.md` (415 lines) — Complete project history
+**To modify MCP setup**: Run `./setup-mcp.sh` then edit `.vscode/settings.json`. All 8 servers must remain operational (test with `./mcp-validate.sh`).
 
-**Project Files:**
+**To build/deploy**: Use VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts. Docker builds require GHCR labels from `docs/architecture/CONTAINER_ORGANIZATION.md`.
 
-- `package.json` — Node.js 20+ dependencies, npm scripts, Volta configuration
-- `Dockerfile` — Production container with all labels and MCP environment
-- `setup-mcp.sh` — Automated MCP server installation script
-- `.github/workflows/build.yml` — CI/CD pipeline (238 lines)
+**To understand architecture**: Read `docs/development/UNITY_SETUP_GUIDE.md` (858 lines) - it contains actual C# code to copy, not aspirational examples.
 
-### Current State: Active Development Repository
+### What Exists Right Now
 
-**What exists NOW** (1,950+ lines of production Unity C# code):
+**Unity C# Systems** (all complete in `catgirl-avatar-project/Assets/Scripts/`):
 
-- ✅ Comprehensive markdown specifications (CATGIRL.md, UNITY_SETUP_GUIDE.md, etc.)
-- ✅ **Working Unity 6.2 LTS project** with 6 complete C# systems in `catgirl-avatar-project/Assets/Scripts/`:
-  - `Character/CatgirlController.cs` (327 lines) - Full NetworkBehaviour with pink auras, purring, cow powers
-  - `Economy/InventorySystem.cs` (284 lines) - Unity Gaming Services economy integration
-  - `Economy/UniversalBankingSystem.cs` (363 lines) - Gambling, auctions, multi-currency systems
-  - `Networking/CatgirlNetworkManager.cs` (324 lines) - Unity Relay + Lobby multiplayer
-  - `UI/InventoryUI.cs` (322 lines) - UI Toolkit pink frilly interface
-  - `Audio/AudioManager.cs` (342 lines) - Centralized sound/music management
-- ✅ **Proper namespace architecture**: All systems use `BambiSleep.CatGirl.{Domain}` namespaces
-- ✅ Complete Unity package dependencies in `Packages/manifest.json` (16 packages)
-- ✅ Node.js 20+ environment with package.json, Volta pinning
-- ✅ Dockerfile with GHCR labels and MCP environment
-- ✅ GitHub Actions CI/CD pipeline (container-build.yml, build.yml)
-- ✅ MCP validation script (mcp-validate.sh) and setup automation
+- `Character/CatgirlController.cs` (327 lines) - NetworkBehaviour with pink auras, purring, cow powers
+- `Economy/InventorySystem.cs` (284 lines) - Unity Gaming Services economy integration
+- `Economy/UniversalBankingSystem.cs` (363 lines) - Gambling, auctions, multi-currency
+- `Networking/CatgirlNetworkManager.cs` (324 lines) - Unity Relay + Lobby multiplayer
+- `UI/InventoryUI.cs` (322 lines) - UI Toolkit VisualElement interface
+- `Audio/AudioManager.cs` (342 lines) - Singleton audio system with mixer groups
 
-**Critical understanding**: This is NOT a concept project - it's a working Unity codebase with enterprise-grade implementations following specification-driven development principles
+**Development Environment**:
+
+- Node.js 20.19.5 + npm 10.9.4 (Volta pinned in `package.json`)
+- 8 MCP servers configured (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres)
+- Docker container with GHCR labels (`ghcr.io/bambisleepchat/bambisleep-church`)
+- GitHub Actions CI/CD with MCP validation, tests, and container builds
+- VS Code tasks for Unity/MCP/container operations (`.vscode/tasks.json`)
+
+**Documentation as Implementation Blueprint** (read these first):
+
+- `docs/development/UNITY_SETUP_GUIDE.md` (858 lines) - Contains actual C# implementations to copy
+- `docs/architecture/CATGIRL.md` (682 lines) - Complete system architecture and Unity packages
+- `docs/development/MCP_SETUP_GUIDE.md` (329 lines) - Exact MCP server configurations
+- `docs/architecture/RELIGULOUS_MANTRA.md` (112 lines) - Emoji conventions, build commands, philosophy
+- `docs/guides/todo.md` - Current implementation status (what's complete vs in-progress)
 
 ## 3-Step Work Methodology
 

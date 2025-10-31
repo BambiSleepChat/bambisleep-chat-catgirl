@@ -162,7 +162,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-container, unity-validation]
     if: github.event_name == 'release'
-    environment: production
     steps:
       - name: 🚀 Deploy notification
         run: |
@@ -206,12 +205,13 @@ jobs:
         run: |
           echo "Checking build documentation completeness..."
 
-          [ -f "build.md" ] || { echo "❌ build.md missing"; exit 1; }
-          [ -f "todo.md" ] || { echo "❌ todo.md missing"; exit 1; }
-          [ -f "CATGIRL.md" ] || { echo "❌ CATGIRL.md missing"; exit 1; }
-          [ -f "UNITY_SETUP_GUIDE.md" ] || { echo "❌ UNITY_SETUP_GUIDE.md missing"; exit 1; }
-          [ -f "MCP_SETUP_GUIDE.md" ] || { echo "❌ MCP_SETUP_GUIDE.md missing"; exit 1; }
-          [ -f "RELIGULOUS_MANTRA.md" ] || { echo "❌ RELIGULOUS_MANTRA.md missing"; exit 1; }
+          [ -f "docs/guides/build.md" ] || { echo "❌ build.md missing"; exit 1; }
+          [ -f "docs/guides/todo.md" ] || { echo "❌ todo.md missing"; exit 1; }
+          [ -f "docs/architecture/CATGIRL.md" ] || { echo "❌ CATGIRL.md missing"; exit 1; }
+          [ -f "docs/development/UNITY_SETUP_GUIDE.md" ] || { echo "❌ UNITY_SETUP_GUIDE.md missing"; exit 1; }
+          [ -f "docs/development/MCP_SETUP_GUIDE.md" ] || { echo "❌ MCP_SETUP_GUIDE.md missing"; exit 1; }
+          [ -f "docs/architecture/RELIGULOUS_MANTRA.md" ] || { echo "❌ RELIGULOUS_MANTRA.md missing"; exit 1; }
+          [ -f "docs/reference/CHANGELOG.md" ] || { echo "❌ CHANGELOG.md missing"; exit 1; }
 
           echo "✅ All documentation files present!"
 
