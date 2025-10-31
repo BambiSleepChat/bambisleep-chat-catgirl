@@ -1,587 +1,678 @@
-## Quick Orientation for AI Coding Agents
+## Project Overview
 
-**⚠️ CRITICAL**: This is a **working Unity 6.2 LTS project** with 1,950+ lines of production C# code. This is NOT a concept project - the Unity systems exist and are complete. The markdown documentation contains canonical implementations to use verbatim, not aspirational suggestions.
+This is a **production Unity 6.2 LTS project** combining:
 
-### Fast Start (Read This First!)
+- **Unity C# Systems** (1,950+ lines): Avatar controller, economy, multiplayer networking, UI
+- **Node.js ↔ Unity IPC Bridge**: JSON-based stdin/stdout communication protocol
+- **MCP Agent Tooling** (8 servers): Development automation via Model Context Protocol
+- **Trademark Requirement**: Always use `BambiSleep™` (with ™) in public-facing content
+- **Documentation as Code**: Markdown files contain canonical implementations to copy verbatim
 
-**To extend Unity systems**: Read the complete implementation in `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs` FIRST, then follow its patterns exactly. All classes use `BambiSleep.CatGirl.{Domain}` namespace and `[Header("🌸 Section")]` attributes.
+### Quick Actions
 
-**To modify MCP setup**: Run `./setup-mcp.sh` then edit `.vscode/settings.json`. All 8 servers must remain operational (test with `./mcp-validate.sh`).
+| Task                     | Command/Location                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------- |
+| **Extend Unity systems** | Read `catgirl-avatar-project/Assets/Scripts/{domain}/{ClassName}.cs` FIRST, follow its patterns |
+| **MCP setup**            | Run `./setup-mcp.sh`, test with `./mcp-validate.sh`                                             |
+| **Build/Deploy**         | VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts                                 |
+| **Architecture guide**   | `docs/development/UNITY_SETUP_GUIDE.md` (858 lines with actual C# code)                         |
 
-**To build/deploy**: Use VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task") or npm scripts. Docker builds require GHCR labels from `docs/architecture/CONTAINER_ORGANIZATION.md`.
-
-**To understand architecture**: Read `docs/development/UNITY_SETUP_GUIDE.md` (858 lines) - it contains actual C# code to copy, not aspirational examples.
-
-### What Exists Right Now
-
-**Unity C# Systems** (all complete in `catgirl-avatar-project/Assets/Scripts/`):
-
-- `Character/CatgirlController.cs` (327 lines) - NetworkBehaviour with pink auras, purring, cow powers
-- `Economy/InventorySystem.cs` (284 lines) - Unity Gaming Services economy integration
-- `Economy/UniversalBankingSystem.cs` (363 lines) - Gambling, auctions, multi-currency
-- `Networking/CatgirlNetworkManager.cs` (324 lines) - Unity Relay + Lobby multiplayer
-- `UI/InventoryUI.cs` (322 lines) - UI Toolkit VisualElement interface
-- `Audio/AudioManager.cs` (342 lines) - Singleton audio system with mixer groups
-
-**Development Environment**:
-
-- Node.js 20.19.5 + npm 10.9.4 (Volta pinned in `package.json`)
-- 8 MCP servers configured (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres)
-- Docker container with GHCR labels (`ghcr.io/bambisleepchat/bambisleep-church`)
-- GitHub Actions CI/CD with MCP validation, tests, and container builds
-- VS Code tasks for Unity/MCP/container operations (`.vscode/tasks.json`)
-
-**Documentation as Implementation Blueprint** (read these first):
-
-- `docs/development/UNITY_SETUP_GUIDE.md` (858 lines) - Contains actual C# implementations to copy
-- `docs/architecture/CATGIRL.md` (682 lines) - Complete system architecture and Unity packages
-- `docs/development/MCP_SETUP_GUIDE.md` (329 lines) - Exact MCP server configurations
-- `docs/architecture/RELIGULOUS_MANTRA.md` (112 lines) - Emoji conventions, build commands, philosophy
-- `docs/guides/todo.md` - Current implementation status (what's complete vs in-progress)
-
-## 3-Step Work Methodology
-
-1. **ANALYZE** — Search/read existing files to understand current structure. **Critical**: This is a spec-driven project - markdown files ARE the implementation blueprint, NOT aspirational docs.
-2. **THINK** — Design simple working solution. Don't overcomplicate. Edit existing files rather than creating new ones when possible. IT MUST WORK, NOT BE PERFECT! Keep it simple, less is better.
-3. **TEST & FIX BUGS** — Run code, verify it works, fix any issues found. For Unity code, follow exact patterns from UNITY_SETUP_GUIDE.md.
-
-## Architecture: Dual Technology Stack
-
-This project has **two distinct but integrated technology stacks**:
-
-1. **Unity 6.2 Gaming Engine**: C# avatar system, economy, networking (files under `Assets/Scripts/`)
-2. **MCP Agent Tooling**: Node.js-based Model Context Protocol servers for development automation
-
-**Project Structure**:
+## Project Structure
 
 ```
-/mnt/f/bambisleep-chat-catgirl/
-├── .github/
-│   ├── copilot-instructions.md    # This file - AI agent guidance
-│   └── workflows/build.yml        # CI/CD pipeline (238 lines)
-├── .vscode/
-│   ├── settings.json              # MCP servers + Unity integration + spell-check
-│   └── tasks.json                 # 8 VS Code tasks for development
-├── catgirl-avatar-project/        # Unity 6.2 LTS project
-│   ├── Assets/Scripts/            # 6 complete C# systems (1,950+ lines)
-│   │   ├── Audio/AudioManager.cs
-│   │   ├── Character/CatgirlController.cs
-│   │   ├── Economy/InventorySystem.cs
-│   │   ├── Economy/UniversalBankingSystem.cs
-│   │   ├── Networking/CatgirlNetworkManager.cs
-│   │   └── UI/InventoryUI.cs
-│   ├── Packages/manifest.json     # 16 Unity packages
-│   └── ProjectSettings/ProjectVersion.txt  # Unity 6000.2.11f1
-├── docs/                          # Comprehensive documentation (4,200+ lines)
-│   ├── architecture/              # CATGIRL.md, RELIGULOUS_MANTRA.md, etc.
-│   ├── development/               # UNITY_SETUP_GUIDE.md, MCP_SETUP_GUIDE.md
-│   ├── guides/                    # build.md, todo.md
-│   └── reference/                 # CHANGELOG.md
-├── Dockerfile                     # Production container (82 lines)
-├── package.json                   # Node.js 20+ dependencies
-├── setup-mcp.sh                   # MCP server installation
-├── mcp-validate.sh                # MCP server validation
-└── README.md                      # Pink frilly project overview
+bambisleep-chat-catgirl/
+├── catgirl-avatar-project/          # Unity 6.2 LTS (Unity 6000.2.11f1)
+│   ├── Assets/Scripts/              # 6 complete C# systems (1,950+ lines)
+│   │   ├── Audio/AudioManager.cs    # 342 lines - Singleton audio system
+│   │   ├── Character/CatgirlController.cs  # 327 lines - NetworkBehaviour
+│   │   ├── Economy/InventorySystem.cs      # 284 lines - UGS Economy
+│   │   ├── Economy/UniversalBankingSystem.cs # 363 lines - Multi-currency
+│   │   ├── Networking/CatgirlNetworkManager.cs # 324 lines - Relay + Lobby
+│   │   └── UI/InventoryUI.cs        # 322 lines - UI Toolkit interface
+│   ├── Packages/manifest.json       # 16 Unity packages (UGS, Netcode, XR)
+│   └── ProjectSettings/ProjectVersion.txt
+├── docs/                            # 4,200+ lines documentation
+│   ├── architecture/                # CATGIRL.md (682), UNITY_IPC_PROTOCOL.md (430)
+│   ├── development/                 # UNITY_SETUP_GUIDE.md (858 - READ THIS)
+│   └── guides/                      # build.md, todo.md
+├── .github/workflows/build.yml      # CI/CD with 7 jobs
+├── .vscode/                         # MCP integration + 8 tasks
+├── Dockerfile                       # GHCR: bambisleepchat/bambisleep-church
+├── package.json                     # Node.js 20.19.5 (Volta pinned)
+├── setup-mcp.sh                     # MCP server installation
+└── mcp-validate.sh                  # Test all 8 MCP servers
 ```
 
-Key documentation files (read in order):
+**Essential Documentation** (read in this order):
 
-- `docs/architecture/CATGIRL.md` — **Master architecture specification**: 682 lines defining Unity avatar systems, RPG mechanics, monetization via Unity Gaming Services, and complete technical implementation details
-- `docs/development/UNITY_SETUP_GUIDE.md` — **Concrete implementation guide**: 858 lines with Unity project structure, specific C# class examples (CatgirlController, InventorySystem, UniversalBankingSystem), package dependencies, and build configurations
-- `docs/development/MCP_SETUP_GUIDE.md` — **Development tooling setup**: 8 essential MCP servers, VS Code configuration, exact `npx`/`uvx` commands
-- `docs/architecture/RELIGULOUS_MANTRA.md` — **Development philosophy & conventions**: Contains the "Sacred Laws" with emoji-coded CI/CD patterns, build command specifications, and the unique cultural context
-- `docs/architecture/CONTAINER_ORGANIZATION.md` — **Deployment standards**: GHCR registry patterns, trademark compliance, container labeling
-- `docs/guides/build.md` + `docs/guides/todo.md` — **Current implementation status**: What works vs what needs to be built
-- `docs/reference/CHANGELOG.md` — **Complete project history**: v1.0.0 with all systems documented
+1. `docs/development/UNITY_SETUP_GUIDE.md` - Complete C# implementations
+2. `docs/architecture/CATGIRL.md` - System architecture & Unity packages
+3. `docs/architecture/UNITY_IPC_PROTOCOL.md` - Node.js ↔ Unity communication protocol
+4. `docs/architecture/RELIGULOUS_MANTRA.md` - Emoji conventions & build philosophy
+5. `docs/guides/todo.md` - Implementation status (complete vs in-progress)
 
-## Critical Project Characteristics
+## Critical Unity C# Patterns
 
-**Documentation-as-Code**: The markdown files contain complete C# class implementations, Unity package configurations, and deployment scripts. Don't invent - extract from these specifications.
+**All 6 systems are COMPLETE** (1,950+ lines). When extending, follow these patterns:
 
-**Trademark Requirements**: All public-facing content must use `BambiSleep™` (with trademark symbol). This is not optional - it's a legal compliance requirement.
+### 1. Namespace & Structure
 
-**Unique Development Culture**: This project follows "Universal Machine Philosophy" with emoji-coded development patterns (🌸 = package management, 👑 = architecture decisions, 💎 = quality metrics). These emojis appear in commit messages, documentation headers, and build scripts - use them when creating new content that mirrors existing documentation style.
+```csharp
+// Namespace: BambiSleep.CatGirl.{Domain}
+namespace BambiSleep.CatGirl.Character
+{
+    [Header("🌸 Section Name")]  // Emoji headers for organization
+    public class CatgirlController : NetworkBehaviour
+    {
+        // Component references, network variables, lifecycle methods
+    }
+}
+```
 
-**Emoji Command System** (from RELIGULOUS_MANTRA.md):
+### 2. NetworkBehaviour Lifecycle
+
+```csharp
+public override void OnNetworkSpawn()
+{
+    if (IsOwner)
+    {
+        InitializeSystems();
+        UpdateNetworkStatsServerRpc(localData);
+    }
+    // Subscribe to NetworkVariable changes
+    networkVariable.OnValueChanged += OnValueChanged;
+}
+
+public override void OnNetworkDespawn()
+{
+    networkVariable.OnValueChanged -= OnValueChanged;
+}
+```
+
+### 3. Unity Gaming Services (Async Pattern)
+
+```csharp
+private async void ConnectToService()
+{
+    try
+    {
+        await UnityServices.InitializeAsync();
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        var result = await EconomyService.Instance.PlayerBalances.GetBalancesAsync();
+    }
+    catch (System.Exception e)
+    {
+        Debug.LogError($"Service error: {e.Message}");
+        // Graceful fallback
+    }
+}
+```
+
+### 4. Animator Performance Pattern
+
+```csharp
+// Cache hash IDs (not strings)
+private static readonly int Speed = Animator.StringToHash("Speed");
+private static readonly int IsPurring = Animator.StringToHash("IsPurring");
+
+animator.SetFloat(Speed, currentSpeed);
+animator.SetBool(IsPurring, true);
+```
+
+### 5. Singleton Services
+
+```csharp
+private static AudioManager _instance;
+public static AudioManager Instance
+{
+    get
+    {
+        if (_instance == null)
+            _instance = FindObjectOfType<AudioManager>();
+        return _instance;
+    }
+}
+
+private void Awake()
+{
+    if (_instance != null && _instance != this)
+    {
+        Destroy(gameObject);
+        return;
+    }
+    _instance = this;
+    DontDestroyOnLoad(gameObject);
+}
+```
+
+**Key Unity Packages** (from `Packages/manifest.json`):
+
+- `com.unity.services.economy` 3.4.2 (currency system)
+- `com.unity.services.authentication` 3.3.4 (player identity)
+- `com.unity.netcode.gameobjects` 1.11.0 (multiplayer)
+- `com.unity.services.lobby` 1.2.2 (matchmaking)
+- `com.unity.xr.interaction.toolkit` 3.0.7 (XR support)
+
+### 6. Unity IPC Protocol (Node.js ↔ Unity Communication)
 
 ```javascript
-// Machine-readable emoji mappings used in commits and docs
-🌸 CHERRY_BLOSSOM  // Package management (npm install, dependencies)
-👑 CROWN           // Architecture decisions (major structural changes)
-💎 GEM             // Quality metrics (tests, coverage, linting)
-🦋 BUTTERFLY       // Transformation processes (migrations, refactors)
-✨ SPARKLES        // Server operations (deployment, services)
-🎭 PERFORMING_ARTS // Development lifecycle (staging, releases)
-🌀 CYCLONE         // System management (systemctl, orchestration)
-💅 NAIL_POLISH     // Code formatting (prettier, linters)
-🔮 CRYSTAL_BALL    // AI/ML operations (MCP servers, LLMs)
-💫 DIZZY           // Cross-platform compatibility
+// Node.js side (src/unity/unity-bridge.js)
+sendMessage(type, data) {
+  const message = {
+    type,
+    timestamp: new Date().toISOString(),
+    data
+  };
+  this.process.stdin.write(JSON.stringify(message) + '\n');
+}
+
+// Listen for Unity responses
+this.process.stdout.on('data', (data) => {
+  const messages = data.toString().split('\n').filter(line => line.trim());
+  messages.forEach(line => {
+    const message = JSON.parse(line);
+    this.handleMessage(message); // Routes to event handlers
+  });
+});
 ```
 
-**When to Use Emojis**:
+```csharp
+// Unity side (Assets/Scripts/IPC/IPCBridge.cs)
+void Update() {
+    if (Console.KeyAvailable) {
+        string line = Console.ReadLine();
+        if (!string.IsNullOrEmpty(line)) {
+            ProcessMessage(line);
+        }
+    }
+}
 
-- ✅ **USE**: In commit messages following existing patterns (e.g., "🌸 Add MCP filesystem server")
-- ✅ **USE**: In documentation headers/sections that mirror CATGIRL.md/UNITY_SETUP_GUIDE.md style
-- ✅ **USE**: In code comments/headers for major Unity components (e.g., `[Header("🦋 New Catgirl Power")]`)
-- ❌ **AVOID**: In plain explanatory text, troubleshooting guides, or technical discussions
-- ❌ **AVOID**: Overusing in every sentence - match the density of existing docs
+void ProcessMessage(string json) {
+    IPCMessage message = JsonUtility.FromJson<IPCMessage>(json);
+    switch (message.type) {
+        case "initialize": InitializeScene(message.data); break;
+        case "render": RenderScene(message.data); break;
+        case "update": UpdateParameters(message.data); break;
+    }
+}
 
-## Essential Development Workflows
-
-**MCP Development Environment**: 8 servers providing filesystem, git, GitHub, memory, sequential-thinking, everything, brave-search, postgres via `npx`/`uvx`. Full VS Code config in `MCP_SETUP_GUIDE.md`. Use `./setup-mcp.sh` for automated installation.
-
-**VS Code MCP Configuration** (already exists in `.vscode/settings.json`):
-
-```json
-{
-  "mcp.servers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/mnt/f/bambisleep-chat-catgirl"
-      ]
-    },
-    "git": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-git",
-        "--repository",
-        "/mnt/f/bambisleep-chat-catgirl"
-      ]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    },
-    "everything": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-everything"]
-    },
-    "brave-search": { "command": "uvx", "args": ["mcp-server-brave-search"] },
-    "postgres": { "command": "uvx", "args": ["mcp-server-postgres"] }
-  }
+void SendMessage(string type, object data) {
+    var message = new { type, timestamp = DateTime.UtcNow.ToString("o"), data };
+    Console.WriteLine(JsonUtility.ToJson(message));
 }
 ```
 
-Note: `.vscode/settings.json` also includes Unity extension config and spell-check dictionary for BambiSleep™-specific terms.
+**Message Types**: initialize, update, render, camera, postprocessing, shutdown (Node→Unity); scene-loaded, render-complete, update-ack, error, heartbeat (Unity→Node)
 
-**Unity Project Creation**:
+**See**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol specification
 
-```bash
-# From UNITY_SETUP_GUIDE.md - exact structure required
-mkdir -p catgirl-avatar-project/{Assets,ProjectSettings,Packages}
-# ProjectSettings/ProjectVersion.txt: Unity 6000.2.11f1
-# Packages/manifest.json: 15+ Unity Gaming Services dependencies
-```
+## Development Workflows
 
-**Build Commands** (from RELIGULOUS_MANTRA.md):
+### MCP Environment (8 Servers)
 
-```bash
-npm test -- --coverage=100        # 100% test coverage requirement
-npm run build -- --universal     # Cross-platform build
-npm run deploy -- --aigf-mode    # AI girlfriend deployment mode
-volta pin node@20-lts            # Version management
-./setup-mcp.sh                   # Automated MCP server setup
-docker build --tag ghcr.io/bambisleepchat/bambisleep-church:latest .
-```
+- **Setup**: Run `./setup-mcp.sh` (installs all servers)
+- **Validation**: Run `./mcp-validate.sh` (tests 8/8 operational)
+- **Config**: `.vscode/settings.json` (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres)
+- **Use cases**:
+  - Create Unity scripts with proper namespaces (filesystem MCP)
+  - Commit with emoji conventions (git MCP): `git commit -m "🦋 Add butterfly flight"`
+  - Create GitHub issues linked to code (github MCP)
 
-**VS Code Tasks** (available in `.vscode/tasks.json`):
+### Build & Deploy Commands
 
 ```bash
-# Run via Command Palette: "Tasks: Run Task" or use shortcuts
-- "Build Unity Project"           # Reminder to use Unity Editor
-- "Clean Unity Project"           # Removes Library/Temp/obj folders
-- "Regenerate Unity Project Files" # Re-sync IDE project files
-- "Build Container"               # Docker build with GHCR labels
-- "Run Tests"                     # npm test with 100% coverage
-- "Setup MCP Servers"             # Runs ./setup-mcp.sh
-- "Check .NET Version"            # dotnet --info
-- "Check Unity Version"           # cat ProjectSettings/ProjectVersion.txt
+# Development
+npm test                          # Run tests (stubs currently, see todo.md)
+npm run build -- --universal      # Cross-platform build
+./setup-mcp.sh                    # Install MCP servers
+
+# Unity
+# Use VS Code Task: "Clean Unity Project" (removes Library/Temp/obj)
+# Use VS Code Task: "Check Unity Version" (Unity 6000.2.11f1)
+
+# Container
+docker build -t ghcr.io/bambisleepchat/bambisleep-church:latest .
+# Registry: ghcr.io/bambisleepchat/bambisleep-church
+# Tags: v{major}.{minor}.{patch}, dev-{branch}, latest
 ```
 
-**Container Deployment**:
+### VS Code Tasks (Ctrl+Shift+P → "Tasks: Run Task")
 
-- Registry: `ghcr.io/bambisleepchat/bambisleep-church`
-- Tags: `v{major}.{minor}.{patch}`, `dev-{branch}`, `latest`
-- Required labels include BambiSleep™ trademark attribution
-- Built on Node.js 20 Alpine with Volta and UV/UVX for Python MCP servers
+1. Build Unity Project (reminder to use Unity Editor)
+2. Clean Unity Project (rm -rf Library/Temp/obj)
+3. Build Container (Docker with GHCR labels)
+4. Run Tests (npm test with coverage)
+5. Setup MCP Servers (./setup-mcp.sh)
+6. Check .NET Version / Check Unity Version
 
-**CI/CD Pipeline**:
+### CI/CD Pipeline (`.github/workflows/build.yml`)
 
-- `.github/workflows/container-build.yml` — Multi-platform Docker builds (amd64, arm64) with automatic GHCR push
-- `.github/workflows/build.yml` — Full validation workflow with MCP server testing, npm build, and deployment
-- `mcp-validate.sh` — Tests all 8 MCP servers for connectivity (filesystem, git, github, memory, sequential-thinking, everything, brave-search, postgres)
-- Runs on push to main/develop branches and on version tags
+- **Triggers**: Push to main/dev, PRs, releases
+- **Jobs**: validate-mcp → test → build-container → unity-validation → deploy → quality-check → summary
+- **Artifacts**: Container images pushed to GHCR with proper labels
 
-## Code Architecture Patterns
+## Real-World Development Scenarios
 
-**Unity C# Structure** (FULLY implemented in `catgirl-avatar-project/Assets/Scripts/`):
+### Scenario 1: Adding New Catgirl Ability
 
-```
-Assets/Scripts/
-├── Character/CatgirlController.cs     # ✅ 327 lines - NetworkBehaviour with pink auras, purring, cow powers
-├── Economy/InventorySystem.cs         # ✅ 284 lines - Unity Gaming Services integration
-├── Economy/UniversalBankingSystem.cs  # ✅ 363 lines - Gambling + auction + multi-currency systems
-├── Networking/CatgirlNetworkManager.cs # ✅ 324 lines - Unity Relay + Lobby multiplayer
-├── UI/InventoryUI.cs                  # ✅ 322 lines - UI Toolkit pink frilly interface
-└── Audio/AudioManager.cs              # ✅ 342 lines - Centralized sound/music management
-```
-
-**⚠️ CRITICAL**: All 6 systems above are COMPLETE production implementations (1,950+ lines total). When extending functionality, follow their established patterns:
-
-1. **Namespace convention**: `BambiSleep.CatGirl.{Domain}` (Character, Economy, Networking, UI, Audio)
-2. **Unity attributes**: `[Header("🌸 Section Name")]` with emoji-coded sections
-3. **Singleton pattern**: Used in AudioManager for centralized services
-4. **Async/await patterns**: Unity Gaming Services calls use proper async Task methods
-5. **Network synchronization**: NetworkVariable<T> for multiplayer state sharing
-
-**Key Technical Integrations**:
-
-- Unity Gaming Services (Economy, Authentication, Analytics, Lobby)
-- Netcode for GameObjects multiplayer (full NetworkBehaviour implementations)
-- Unity Relay + Lobby Services (async connection handling in CatgirlNetworkManager)
-- XR Interaction Toolkit (eye/hand tracking ready)
-- UI Toolkit (VisualElement-based UI in InventoryUI.cs)
-- Addressables (asset streaming ready)
-- Audio Mixer groups (Master, Music, SFX, Voice channels in AudioManager)
-
-**Monetization Architecture**: Unity IAP + Gaming Services Economy with ethical guidelines (no pay-to-win, transparent drop rates, COPPA compliance)
-
-## Unity Gaming Services Integration Patterns
-
-**Economy Service Implementation**:
+**Task**: Implement "Butterfly Flight" ability with networked synchronization
 
 ```csharp
-// From UniversalBankingSystem.cs - Currency management
-public NetworkVariable<long> pinkCoins = new NetworkVariable<long>(0);
-public NetworkVariable<long> cowTokens = new NetworkVariable<long>(0);
-public NetworkVariable<long> eldritchCurrency = new NetworkVariable<long>(0);
+// 1. Extend CatgirlController.cs - Add to stats class
+[Header("🦋 Butterfly Powers")]
+public float butterflyEnergy = 100.0f;
+public bool canFly = false;
 
-private async void LoadPlayerBalances()
+// 2. Add NetworkVariable for multiplayer sync
+private NetworkVariable<bool> isFlying = new NetworkVariable<bool>(false);
+
+// 3. Add in OnNetworkSpawn() subscription
+isFlying.OnValueChanged += OnFlyingStateChanged;
+
+// 4. Implement ability activation
+[ServerRpc]
+private void ActivateButterflyFlightServerRpc()
+{
+    if (butterflyEnergy > 20f)
+    {
+        isFlying.Value = true;
+        butterflyEnergy -= 20f;
+        animator.SetBool("IsFlying", true);
+    }
+}
+
+// 5. Add to Update() for input handling
+if (Input.GetKeyDown(KeyCode.Space) && IsOwner)
+    ActivateButterflyFlightServerRpc();
+```
+
+**Files to modify**: `CatgirlController.cs` (add ~30 lines), update animator controller in Unity Editor
+
+### Scenario 2: Creating New Shop Item with Gambling Unlock
+
+**Task**: Add "Divine Cow Crown" item available via auction or gambling
+
+```csharp
+// 1. Add item definition to InventorySystem.cs
+var divineCowCrown = new CatgirlItem {
+    itemId = "divine_cow_crown_001",
+    displayName = "Divine Cow Crown",
+    rarity = 5, // Diablo secret level tier
+    isCowPowerItem = true,
+    pinkValue = 5000f,
+    description = "Legendary crown that channels ancient cow powers"
+};
+
+// 2. Add to UniversalBankingSystem.cs gambling rewards
+private void ProcessGamblingWin(string gameType, long betAmount)
+{
+    float roll = Random.value;
+    if (roll < 0.001f) // 0.1% chance for legendary
+    {
+        inventory.AddItem(GetLegendaryItem("divine_cow_crown_001"));
+        TriggerWinEffectsClientRpc();
+    }
+}
+
+// 3. Register item in Unity Gaming Services Economy Dashboard
+// - Currency ID: "divine_cow_crown_001"
+// - Category: "legendary_equipment"
+// - Custom data: {"slot": "head", "cowPowerBonus": 1000}
+```
+
+**Files to modify**: `InventorySystem.cs` (~10 lines), `UniversalBankingSystem.cs` (~15 lines), UGS Dashboard config
+
+### Scenario 3: MCP-Assisted Development Workflow
+
+**Task**: Use MCP servers to scaffold new Unity component
+
+```bash
+# 1. Use filesystem MCP to create new script
+# AI agent creates: Assets/Scripts/Character/TailPhysicsController.cs
+# With proper namespace: BambiSleep.CatGirl.Character
+# Includes [Header("🌸 Tail Configuration")] attributes
+
+# 2. Use git MCP to commit with emoji convention
+git add Assets/Scripts/Character/TailPhysicsController.cs
+git commit -m "🦋 Add dynamic tail physics with wind simulation
+
+- Real-time tail movement based on velocity
+- Wind zone interaction for realistic swaying
+- Networked tail position synchronization
+- Pink sparkle particle trail on rapid movement"
+
+# 3. Use github MCP to create tracking issue
+# Creates issue titled: "Implement tail collision detection"
+# Links to TailPhysicsController.cs:45 (specific line)
+# Auto-assigns labels: "enhancement", "unity", "character-system"
+```
+
+**MCP servers used**: filesystem (file creation), git (commit), github (issue tracking)
+
+### Scenario 4: Debugging Unity Gaming Services Integration
+
+**Task**: Troubleshoot Economy service connection failing
+
+```csharp
+// 1. Check initialization order in UniversalBankingSystem.cs
+private async void Start()
+{
+    try
+    {
+        Debug.Log("🏦 Initializing Unity Gaming Services...");
+
+        // CRITICAL: Initialize in this exact order
+        await UnityServices.InitializeAsync();
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+        Debug.Log($"✅ Player ID: {AuthenticationService.Instance.PlayerId}");
+
+        // Only after auth succeeds
+        await LoadPlayerBalances();
+    }
+    catch (AuthenticationException e)
+    {
+        Debug.LogError($"❌ Auth failed: {e.Message}");
+        // Fallback to offline mode
+        InitializeOfflineBalance();
+    }
+}
+
+// 2. Verify credentials in Unity Dashboard
+// - Project ID matches ProjectSettings/Services/com.unity.services.core
+// - Economy items configured (pinkCoins, cowTokens)
+// - Environment set to "production" or "development"
+
+// 3. Test with manual balance fetch
+[ContextMenu("Test UGS Connection")]
+private async void TestEconomyConnection()
 {
     var balances = await EconomyService.Instance.PlayerBalances.GetBalancesAsync();
-    ProcessBalanceData(balances);
+    Debug.Log($"Fetched {balances.Balances.Count} currency types");
 }
 ```
 
-**Authentication & Analytics Setup**:
+**Debugging steps**: Check Unity logs, verify Dashboard config, test auth flow separately
+
+### Scenario 5: Implementing Multiplayer Auction House
+
+**Task**: Create real-time auction system synchronized across clients
 
 ```csharp
-// Standard UGS initialization pattern used throughout codebase
-await UnityServices.InitializeAsync();
-await AuthenticationService.Instance.SignInAnonymouslyAsync();
-AnalyticsService.Instance.StartDataCollection();
-```
-
-**Package Dependencies** (from `Packages/manifest.json`):
-
-- `com.unity.services.core`: 1.15.0 (foundation)
-- `com.unity.services.economy`: 3.4.2 (currency system)
-- `com.unity.services.authentication`: 3.3.4 (player identity)
-- `com.unity.services.analytics`: 5.1.1 (usage tracking)
-- `com.unity.services.lobby`: 1.2.2 (multiplayer matchmaking)
-- `com.unity.purchasing`: 4.12.2 (IAP integration)
-
-## Current Implementation Status
-
-**What Exists** (per `IMPLEMENTATION_PROGRESS.md`):
-
-- ✅ Complete architectural specifications (682-line CATGIRL.md, 858-line UNITY_SETUP_GUIDE.md)
-- ✅ `package.json` with Node.js 20+ dependencies and Volta configuration
-- ✅ Working Dockerfile with proper GHCR labels and MCP environment
-- ✅ `setup-mcp.sh` script for automated MCP server installation
-- ✅ `mcp-validate.sh` script with tests for all 8 MCP servers
-- ✅ VS Code MCP configuration templates (see MCP_SETUP_GUIDE.md)
-- ✅ Unity 6.2 LTS project structure (`catgirl-avatar-project/`)
-- ✅ **Six complete Unity C# systems (1,950+ lines)**:
-  - CatgirlController.cs (327 lines) - Full pink aura system, purring cycles, cow powers
-  - InventorySystem.cs (284 lines) with Unity Gaming Services Economy integration
-  - UniversalBankingSystem.cs (363 lines) with gambling, auctions, multi-currency
-  - CatgirlNetworkManager.cs (324 lines) with Unity Relay + Lobby Services
-  - InventoryUI.cs (322 lines) with UI Toolkit VisualElements
-  - AudioManager.cs (342 lines) with singleton pattern and mixer groups
-- ✅ GitHub Actions CI/CD pipelines (`.github/workflows/build.yml`)
-- ✅ Container registry: `ghcr.io/bambisleepchat/bambisleep-church`
-
-**What's In Progress** (per `todo.md`):
-
-- 🚧 Unity Editor installation (Unity 6000.2.11f1) for compilation testing
-- 🚧 Unity Hub automated installation documentation
-- 🚧 XR Controller system implementation
-- 🚧 Game Manager system implementation
-- 🚧 Complete test suite with 100% coverage requirement
-- 🚧 Unity Gaming Services credentials configuration
-- 🚧 Unity Hub automated installation documentation
-
-## Safe Development Practices
-
-**Unity Code Changes**:
-
-- Follow exact class structure from UNITY_SETUP_GUIDE.md (CatgirlController, InventorySystem, etc.)
-- Update `Packages/manifest.json` when adding Unity packages
-- Maintain Assets/Scripts folder hierarchy: `{Character,Inventory,Economy,Networking,UI}`
-
-**MCP Configuration Changes**:
-
-- Use exact `mcp.servers` JSON from MCP_SETUP_GUIDE.md
-- Prefer `npx -y @modelcontextprotocol/server-*` pattern for official servers
-- Use `uvx` for Python-based servers (brave-search, postgres)
-
-**Container Updates**:
-
-- Include all required labels from CONTAINER_ORGANIZATION.md
-- Maintain `ghcr.io/bambisleepchat/bambisleep-church` registry
-- Follow semantic versioning: `v{major}.{minor}.{patch}`
-
-## Trademark & Cultural Compliance
-
-**Required**: Use `BambiSleep™` (with ™ symbol) in all public-facing content
-**Philosophy**: "Universal Machine Philosophy" with 8/8 MCP operational status
-**Quality Standards**: 100% test coverage, enterprise-grade error handling, cross-platform compatibility
-
-## Common Development Task Examples
-
-### Unity Development Tasks
-
-**Adding New Catgirl Abilities**:
-
-```csharp
-// Extend CatgirlController.cs (follow existing pattern)
-[Header("🦋 New Catgirl Power")]
-public float butterflyEnergy = 100.0f;
-
-private void ActivateButterflyMode()
+// 1. Create data structure in UniversalBankingSystem.cs
+[System.Serializable]
+public struct AuctionListing
 {
-    // Add to existing InitializeCatgirlSystems() method
-    animator.SetBool("ButterflyModeActive", true);
-    StartCoroutine(ButterflyFlightCycle());
+    public string itemId;
+    public ulong sellerClientId;
+    public long currentBid;
+    public long buyoutPrice;
+    public double expirationTime;
+}
+
+// 2. Use NetworkList for synchronization
+private NetworkList<AuctionListing> activeAuctions;
+
+private void Awake()
+{
+    activeAuctions = new NetworkList<AuctionListing>();
+}
+
+// 3. Server handles bid logic
+[ServerRpc(RequireOwnership = false)]
+public void PlaceBidServerRpc(string itemId, long bidAmount, ServerRpcParams rpcParams = default)
+{
+    var auction = activeAuctions.FirstOrDefault(a => a.itemId == itemId);
+
+    if (bidAmount > auction.currentBid)
+    {
+        // Refund previous bidder
+        RefundPreviousBidder(auction);
+
+        // Update auction
+        auction.currentBid = bidAmount;
+        auction.buyerClientId = rpcParams.Receive.SenderClientId;
+
+        // Notify all clients
+        NotifyBidUpdateClientRpc(itemId, bidAmount);
+    }
+}
+
+// 4. Update UI on all clients
+[ClientRpc]
+private void NotifyBidUpdateClientRpc(string itemId, long newBid)
+{
+    // Update InventoryUI auction display
+    FindObjectOfType<InventoryUI>().RefreshAuctionListing(itemId, newBid);
 }
 ```
 
-**Adding Items to Inventory System**:
+**Files to modify**: `UniversalBankingSystem.cs` (~80 lines), `InventoryUI.cs` (~40 lines), new prefab for auction UI
+
+### Scenario 6: Optimizing Animator Performance
+
+**Task**: Reduce animator overhead when many catgirls are on screen
 
 ```csharp
-// Create new CatgirlItem in InventorySystem.cs
-var newItem = new CatgirlItem {
-    itemName = "Rainbow Butterfly Wings",
-    rarity = 4, // 1-5 scale (5 = secret Diablo level)
-    isCowPowerItem = false,
-    value = 2500
-};
-inventory.AddItem(newItem);
-```
+// Current pattern in CatgirlController.cs (CORRECT):
+private static readonly int Speed = Animator.StringToHash("Speed");
+private static readonly int IsPurring = Animator.StringToHash("IsPurring");
 
-**Implementing New Currency Types**:
+// ❌ DON'T DO THIS (performance killer):
+animator.SetFloat("Speed", currentSpeed); // String lookup every frame
 
-```csharp
-// Add to UniversalBankingSystem.cs NetworkVariables section
-public NetworkVariable<long> butterflyCoins = new NetworkVariable<long>(0);
+// ✅ DO THIS (cached hash):
+animator.SetFloat(Speed, currentSpeed); // Direct hash lookup
 
-// Add to Unity Gaming Services Economy configuration
-// Via Unity Dashboard: Create currency "butterflyCoins"
-```
+// Additional optimization: Culling system
+private void Update()
+{
+    // Only update animator if visible to camera
+    if (!isVisibleToCamera)
+    {
+        animator.cullingMode = AnimatorCullingMode.CullCompletely;
+        return;
+    }
 
-**Setting Up Unity Editor** (for compilation testing):
-
-```bash
-# Install Unity Hub
-wget -qO - https://hub.unity3d.com/linux/keys/public | gpg --dearmor | sudo tee /usr/share/keyrings/unity-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/unity-archive-keyring.gpg] https://hub.unity3d.com/linux/repos/deb stable main" | sudo tee /etc/apt/sources.list.d/unityhub.list
-sudo apt update && sudo apt install unityhub
-
-# Install Unity 6.2 LTS (6000.2.11f1) via Unity Hub
-unityhub --install 6000.2.11f1 --changeset <changeset>
-
-# Open project
-unityhub -- --projectPath /mnt/f/bambisleep-chat-catgirl/catgirl-avatar-project
-```
-
-### MCP Development Tasks
-
-**Adding New MCP Server**:
-
-```bash
-# Install server via npx/uvx
-npx -y @modelcontextprotocol/server-new-feature
-# OR for Python servers:
-uvx --install mcp-server-new-feature
-
-# Add to ~/.config/mcp/vscode-settings.json
-"new-feature": {
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-new-feature"]
+    animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+    UpdateAnimations();
 }
 ```
 
-**Validating All 8 MCP Servers** (comprehensive test):
+**Impact**: 60+ FPS with 50 catgirls vs 20 FPS with string lookups
+
+### Scenario 7: Container Deployment with New Features
+
+**Task**: Build and deploy updated avatar system to GHCR
 
 ```bash
-# Automated validation via mcp-validate.sh
-./mcp-validate.sh
+# 1. Update package.json version (semantic versioning)
+# Change: "version": "1.0.0" → "1.1.0" (minor feature addition)
 
-# Manual individual server tests:
-# Test filesystem server
-echo "Testing filesystem..." && npx -y @modelcontextprotocol/server-filesystem --version
-
-# Test git server
-echo "Testing git..." && npx -y @modelcontextprotocol/server-git --help
-
-# Test GitHub server (requires GITHUB_PERSONAL_ACCESS_TOKEN)
-echo "Testing GitHub..." && npx -y @modelcontextprotocol/server-github --version
-
-# Test memory server
-echo "Testing memory..." && npx -y @modelcontextprotocol/server-memory --version
-
-# Test sequential-thinking server
-echo "Testing sequential-thinking..." && npx -y @modelcontextprotocol/server-sequential-thinking --version
-
-# Test everything server
-echo "Testing everything..." && npx -y @modelcontextprotocol/server-everything --version
-
-# Test Python-based servers (requires uv/uvx)
-echo "Testing brave-search..." && uvx mcp-server-brave-search --version
-echo "Testing postgres..." && uvx mcp-server-postgres --version
-
-# Verify VS Code integration
-echo "✅ All MCP servers validated - check VS Code MCP extension for 8/8 operational status"
-```
-
-### Container & Deployment Tasks
-
-**Building Container with New Features**:
-
-```bash
-# Follow CONTAINER_ORGANIZATION.md patterns
+# 2. Build container with proper labels
 docker build \
-    --tag ghcr.io/bambisleepchat/bambisleep-church:v1.2.0 \
-    --tag ghcr.io/bambisleepchat/bambisleep-church:latest \
-    --label org.bambi.feature="new-catgirl-powers" .
+    -t ghcr.io/bambisleepchat/bambisleep-church:v1.1.0 \
+    -t ghcr.io/bambisleepchat/bambisleep-church:latest \
+    --label org.opencontainers.image.version="1.1.0" \
+    --label org.bambi.feature="butterfly-flight-ability" \
+    --label org.bambi.unity-version="6000.2.11f1" \
+    .
+
+# 3. Test container locally
+docker run --rm bambisleep-church:v1.1.0 npm test
+
+# 4. Push to registry (happens automatically via CI/CD)
+# GitHub Actions workflow triggers on version tag:
+git tag -a v1.1.0 -m "🦋 Add butterfly flight ability"
+git push origin v1.1.0
+
+# 5. Verify deployment
+docker pull ghcr.io/bambisleepchat/bambisleep-church:v1.1.0
+docker inspect ghcr.io/bambisleepchat/bambisleep-church:v1.1.0 | grep -i bambi
 ```
 
-**Adding Build Scripts** (to `package.json`):
+**CI/CD result**: 7 jobs run, container deployed with all labels, semantic versioning maintained
 
-```json
-{
-  "scripts": {
-    "unity:test": "echo 'Testing Unity CatgirlController compilation...'",
-    "mcp:health": "echo 'Checking MCP server health (8/8 operational)...'",
-    "container:verify": "echo 'Verifying BambiSleep™ trademark labels...'"
+### Scenario 8: Memory Server for Development Context
+
+**Task**: Use MCP memory server to maintain knowledge across coding sessions
+
+```bash
+# Session 1: Store Unity package versions
+# AI agent remembers: "This project uses Unity Netcode 1.11.0, UGS Economy 3.4.2"
+
+# Session 2: Query previous decisions
+# AI recalls: "CatgirlController uses NetworkBehaviour, not MonoBehaviour"
+
+# Session 3: Reference past implementations
+# AI knows: "Gambling system uses 5% house edge, defined in UniversalBankingSystem.cs:299"
+
+# Practical usage:
+# - Remembers BambiSleep™ trademark requirement
+# - Recalls emoji conventions (🦋 for transformations, 🌸 for packages)
+# - Maintains context about cow powers being "secret level" features
+# - Tracks which Unity systems are complete vs in-progress (from todo.md)
+```
+
+**MCP servers used**: memory (context persistence), sequential-thinking (complex reasoning)
+
+### Scenario 9: Node.js ↔ Unity IPC Communication
+
+**Task**: Implement bidirectional communication for cathedral rendering
+
+```javascript
+// 1. Create Unity bridge in Node.js (src/unity/unity-bridge.js)
+const { spawn } = require("child_process");
+
+class UnityBridge extends EventEmitter {
+  constructor(options) {
+    super();
+    this.unityPath = options.unityPath;
+    this.projectPath = options.projectPath;
+    this.process = null;
+  }
+
+  start() {
+    this.process = spawn(this.unityPath, [
+      "-batchmode",
+      "-projectPath",
+      this.projectPath,
+      "-executeMethod",
+      "IPCBridge.StartIPC",
+    ]);
+
+    // Parse JSON messages from Unity
+    this.process.stdout.on("data", (data) => {
+      const lines = data.toString().split("\n").filter(Boolean);
+      lines.forEach((line) => {
+        try {
+          const msg = JSON.parse(line);
+          this.emit(`unity:${msg.type}`, msg.data);
+        } catch (e) {
+          console.error("Invalid JSON from Unity:", line);
+        }
+      });
+    });
+  }
+
+  sendMessage(type, data) {
+    const message = {
+      type,
+      timestamp: new Date().toISOString(),
+      data,
+    };
+    this.process.stdin.write(JSON.stringify(message) + "\n");
   }
 }
+
+// 2. Use the bridge
+const bridge = new UnityBridge({
+  unityPath: "/opt/unity/Editor/Unity",
+  projectPath: "./catgirl-avatar-project",
+});
+
+bridge.on("unity:scene-loaded", (data) => {
+  console.log("Scene loaded:", data.sceneName);
+  bridge.sendMessage("update", { neonIntensity: 7.5 });
+});
+
+bridge.on("unity:render-complete", (data) => {
+  console.log("Render saved:", data.outputPath);
+});
+
+bridge.start();
 ```
-
-## Troubleshooting Common Issues
-
-### Unity Gaming Services Connection Problems
 
 ```csharp
-// Always initialize UGS in this order (from UNITY_SETUP_GUIDE.md):
-await UnityServices.InitializeAsync();
-await AuthenticationService.Instance.SignInAnonymouslyAsync();
-// Then proceed with Economy/Analytics calls
+// 3. Unity IPC handler (Assets/Scripts/IPC/IPCBridge.cs)
+using UnityEngine;
+using System;
+
+[Serializable]
+public class IPCMessage {
+    public string type;
+    public string timestamp;
+    public string data; // JSON string for nested object
+}
+
+public class IPCBridge : MonoBehaviour {
+    void Update() {
+        // Read from stdin (Node.js writes here)
+        if (Console.KeyAvailable) {
+            string json = Console.ReadLine();
+            ProcessMessage(json);
+        }
+    }
+
+    void ProcessMessage(string json) {
+        try {
+            IPCMessage msg = JsonUtility.FromJson<IPCMessage>(json);
+
+            switch (msg.type) {
+                case "initialize":
+                    var initData = JsonUtility.FromJson<InitData>(msg.data);
+                    InitializeScene(initData);
+                    break;
+                case "update":
+                    var updateData = JsonUtility.FromJson<UpdateData>(msg.data);
+                    UpdateParameters(updateData);
+                    SendMessage("update-ack", new { success = true });
+                    break;
+                case "render":
+                    var renderData = JsonUtility.FromJson<RenderData>(msg.data);
+                    RenderScene(renderData);
+                    break;
+            }
+        } catch (Exception e) {
+            SendMessage("error", new {
+                errorCode = "INVALID_MESSAGE",
+                message = e.Message
+            });
+        }
+    }
+
+    void SendMessage(string type, object data) {
+        var msg = new {
+            type,
+            timestamp = DateTime.UtcNow.ToString("o"),
+            data
+        };
+        // Write to stdout (Node.js reads this)
+        Console.WriteLine(JsonUtility.ToJson(msg));
+    }
+
+    void InitializeScene(InitData data) {
+        // Load scene, configure parameters
+        SendMessage("scene-loaded", new {
+            sceneName = data.sceneName,
+            objectCount = 156
+        });
+    }
+}
 ```
 
-### MCP Server Not Responding
+**Message flow**: Node→Unity (initialize, update, render) | Unity→Node (scene-loaded, update-ack, render-complete, error, heartbeat)
 
-```bash
-# Re-run automated setup
-./setup-mcp.sh
+**Files to create**: `src/unity/unity-bridge.js` (~200 lines), `Assets/Scripts/IPC/IPCBridge.cs` (~150 lines)
 
-# Check individual server status
-npx -y @modelcontextprotocol/server-filesystem --version
-
-# Verify VS Code configuration
-ls -la ~/.config/mcp/vscode-settings.json
-```
-
-### Unity Package Dependency Issues
-
-```bash
-# Reset package cache (from Unity project directory)
-rm -rf Library/PackageCache
-# Restart Unity Editor to rebuild package resolution
-```
-
-### Container Build Failures
-
-```bash
-# Verify all required labels present (CONTAINER_ORGANIZATION.md)
-docker inspect ghcr.io/bambisleepchat/bambisleep-church:latest | grep -i bambi
-
-# Check Volta/UV installations in container
-docker run --rm bambisleep-church volta --version
-docker run --rm bambisleep-church uv --version
-```
-
-## Essential File Patterns
-
-**Always Check First**: `docs/development/IMPLEMENTATION_PROGRESS.md` for current implementation status
-**For Unity Changes**: Follow exact patterns in `docs/development/UNITY_SETUP_GUIDE.md` (CatgirlController, InventorySystem)
-**For MCP Issues**: Use `./setup-mcp.sh` then check `~/.config/mcp/vscode-settings.json`
-**For Container Updates**: Reference `docs/architecture/CONTAINER_ORGANIZATION.md` labels and `Dockerfile` structure
-**For Build Issues**: Check `package.json` scripts match `docs/architecture/RELIGULOUS_MANTRA.md` requirements
-**For Project History**: See `docs/reference/CHANGELOG.md` for complete v1.0.0 details
-
-## Architecture & Workflow Clarity
-
-**Critical Understanding of "Missing" Content**:
-
-- The Unity Assets/Scripts/ structure in `docs/development/UNITY_SETUP_GUIDE.md` is **implementation blueprint**, not wishful thinking
-- Code examples in markdown files are **canonical implementations** to copy, not suggestions
-- When asked to "create Unity class X", extract the complete implementation from `docs/development/UNITY_SETUP_GUIDE.md`
-- The 858-line UNITY_SETUP_GUIDE.md contains actual C# code that should be used verbatim
-
-**Testing & Verification Workflow**:
-
-```bash
-# 1. Verify Node.js environment
-node --version  # Should be 20.x
-npm --version   # Should be 10.x
-volta --version # Should show Volta installation
-
-# 2. Test MCP servers (run validation from MCP Development Tasks section above)
-
-# 3. Verify Unity setup (when Unity project exists)
-ls -la catgirl-avatar-project/Assets/Scripts/
-cat catgirl-avatar-project/ProjectSettings/ProjectVersion.txt
-
-# 4. Validate container build
-docker build -t test-catgirl . && docker inspect test-catgirl | grep -i bambi
-
-# 5. Check trademark compliance
-grep -r "BambiSleep™" --include="*.md" --include="*.json" .
-```
-
-**Common Misunderstandings to Avoid**:
-
-- ❌ "Let me create a basic CatgirlController" → ✅ Use existing 327-line implementation or extract from `docs/development/UNITY_SETUP_GUIDE.md`
-- ❌ "The Unity project doesn't exist yet, so I'll skip that" → ✅ It exists with 1,950 lines of C# code across 6 complete systems
-- ❌ "I'll improve the emoji usage" → ✅ Match existing documentation density exactly
-- ❌ "Let me add some helpful Unity packages" → ✅ Only use packages listed in Packages/manifest.json spec
-- ❌ "The docs are aspirational, let me simplify" → ✅ The docs ARE the implementation - use them fully
-
-**Development Workflow Reality Check**:
-
-- ✅ Unity project DOES exist at `catgirl-avatar-project/` with real C# code
-- ✅ CatgirlController.cs is 327 lines of actual implementation (not a stub)
-- ✅ InventorySystem.cs (284 lines) and UniversalBankingSystem.cs (363 lines) are complete
-- ✅ CatgirlNetworkManager.cs (324 lines) with full Relay + Lobby integration is complete
-- ✅ InventoryUI.cs (322 lines) with UI Toolkit VisualElements is complete
-- ✅ AudioManager.cs (342 lines) with singleton pattern is complete
-- ✅ All systems use proper `BambiSleep.CatGirl.{Domain}` namespaces
-- ✅ GitHub Actions workflows are live and functional
-- ✅ MCP validation runs automatically on CI
-- ✅ Container builds deploy to GHCR on every push to main
-
-_This is a specification-driven project - the documentation IS the implementation plan._
+**Reference**: `docs/architecture/UNITY_IPC_PROTOCOL.md` for complete protocol spec with all message types
