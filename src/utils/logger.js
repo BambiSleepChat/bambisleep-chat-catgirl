@@ -71,9 +71,10 @@ if (config.logging.console) {
  * @param {string} module - Module name
  * @returns {winston.Logger}
  */
-logger.child = function (module) {
+const createChildLogger = function (module) {
   return logger.child({ module });
 };
+logger.createChild = createChildLogger;
 
 /**
  * Log startup banner

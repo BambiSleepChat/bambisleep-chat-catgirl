@@ -64,11 +64,12 @@ describe('UnityBridge', () => {
     });
 
     it('should format message correctly', () => {
-      // Mock process
+      // Mock process with kill method
       bridge.process = {
         stdin: {
           write: jest.fn()
-        }
+        },
+        kill: jest.fn()
       };
 
       bridge.sendMessage('initialize', { scene: 'MainMenu' });

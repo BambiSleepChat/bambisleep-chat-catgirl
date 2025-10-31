@@ -32,6 +32,8 @@ describe('Configuration', () => {
     process.env.NODE_ENV = 'production';
     process.env.PORT = '8080';
     process.env.LOG_LEVEL = 'error';
+    process.env.API_KEY = 'test-api-key';
+    process.env.UNITY_PROJECT_ID = 'test-project-id';
 
     const config = require('../config');
 
@@ -60,6 +62,8 @@ describe('Configuration', () => {
 
   it('should identify production environment', () => {
     process.env.NODE_ENV = 'production';
+    process.env.API_KEY = 'test-api-key';
+    process.env.UNITY_PROJECT_ID = 'test-project-id';
 
     const config = require('../config');
 
