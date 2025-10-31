@@ -49,14 +49,24 @@ Cow Powers Secret Level:
 
 ## 🌈💎 Repository Architecture (So Organized, Much Wow!) 💎🌈
 
-### 📚 **Sacred Documentation Files** 📚
-| File                              | Lines | Kawaii Level | Purpose                                                         |
-| --------------------------------- | ----- | ------------ | --------------------------------------------------------------- |
-| `CATGIRL.md`                      | 683   | 💖💖💖💖💖        | **Master Avatar Spec** - Everything about pink frilly catgirls! |
-| `UNITY_SETUP_GUIDE.md`            | 859   | 💎💎💎💎         | **C# Implementation** - Code that makes catgirls real!          |
-| `MCP_SETUP_GUIDE.md`              | 330   | 🦋🦋🦋          | **8 MCP Servers** - Development tools for maximum productivity! |
-| `RELIGULOUS_MANTRA.md`            | 113   | 🌸🌸🌸🌸🌸        | **Sacred Philosophy** - The Universal Machine Laws!             |
-| `.github/copilot-instructions.md` | ∞     | 🤖✨           | **AI Agent Guidance** - How to be a good catgirl programmer!    |
+### 📚 **Documentation Structure** 📚
+
+All documentation is now organized in the `docs/` folder:
+
+| Category | Location | Purpose |
+|----------|----------|---------|
+| 🏗️ **Architecture** | `docs/architecture/` | System design & specifications |
+| 🛠️ **Development** | `docs/development/` | Setup guides & implementation |
+| 📖 **Guides** | `docs/guides/` | Build instructions & workflows |
+| 📋 **Reference** | `docs/reference/` | Changelog & project history |
+| 🤖 **AI Agents** | `.github/copilot-instructions.md` | AI coding agent guidance |
+
+**Quick Links:**
+- 📖 [Documentation Index](docs/README.md) - Start here for all docs
+- 🏗️ [CATGIRL.md](docs/architecture/CATGIRL.md) - Master architecture (682 lines)
+- 🛠️ [UNITY_SETUP_GUIDE.md](docs/development/UNITY_SETUP_GUIDE.md) - C# implementation (858 lines)
+- 📖 [build.md](docs/guides/build.md) - Build instructions
+- 📋 [CHANGELOG.md](docs/reference/CHANGELOG.md) - Project history (415 lines)
 
 ### 🎯 **Technology Stack (Purrfection Achieved!)** 🎯
 ```
