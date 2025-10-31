@@ -1,0 +1,22 @@
+{
+  // Unity C# Debugging Configuration for BambiSleep™ CatGirl Avatar System
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to Unity Editor",
+      "type": "vstuc",
+      "request": "attach"
+    },
+    {
+      "name": "Attach to Unity Editor and Play",
+      "type": "vstuc",
+      "request": "attach"
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
+    }
+  ]
+}
