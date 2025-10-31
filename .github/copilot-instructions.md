@@ -4,10 +4,10 @@ This repo is a **documentation-first architecture specification** for the BambiS
 
 ### Quick Reference: Essential Files
 
-- `CATGIRL.md` (683 lines) — Complete avatar system specification with tracking, inventory, RPG mechanics
-- `UNITY_SETUP_GUIDE.md` (859 lines) — Full C# implementations, Unity packages, project structure
-- `MCP_SETUP_GUIDE.md` (330 lines) — Development environment with 8 MCP servers
-- `RELIGULOUS_MANTRA.md` (113 lines) — Sacred Laws, emoji patterns, build commands, philosophy
+- `CATGIRL.md` (682 lines) — Complete avatar system specification with tracking, inventory, RPG mechanics
+- `UNITY_SETUP_GUIDE.md` (858 lines) — Full C# implementations, Unity packages, project structure
+- `MCP_SETUP_GUIDE.md` (329 lines) — Development environment with 8 MCP servers
+- `RELIGULOUS_MANTRA.md` (112 lines) — Sacred Laws, emoji patterns, build commands, philosophy
 - `CONTAINER_ORGANIZATION.md` — Docker/GHCR standards, trademark requirements
 - `package.json` — Node.js 20+ dependencies, npm scripts, Volta configuration
 - `Dockerfile` — Production container with all labels and MCP environment
@@ -20,7 +20,7 @@ This repo is a **documentation-first architecture specification** for the BambiS
 
 - ✅ Comprehensive markdown specifications (CATGIRL.md, UNITY_SETUP_GUIDE.md, etc.)
 - ✅ Working Unity 6.2 LTS project with real C# implementations in `catgirl-avatar-project/`
-- ✅ CatgirlController.cs (261 lines), InventorySystem.cs, UniversalBankingSystem.cs
+- ✅ CatgirlController.cs (260 lines), InventorySystem.cs (298 lines), UniversalBankingSystem.cs (335 lines)
 - ✅ Complete Unity package dependencies in `Packages/manifest.json` (16 packages)
 - ✅ Node.js 20+ environment with package.json, Volta pinning
 - ✅ Dockerfile with GHCR labels and MCP environment
@@ -44,8 +44,8 @@ This project has **two distinct but integrated technology stacks**:
 
 Key documentation files (read in order):
 
-- `CATGIRL.md` — **Master architecture specification**: 683 lines defining Unity avatar systems, RPG mechanics, monetization via Unity Gaming Services, and complete technical implementation details
-- `UNITY_SETUP_GUIDE.md` — **Concrete implementation guide**: Unity project structure, specific C# class examples (CatgirlController, InventorySystem, UniversalBankingSystem), package dependencies, and build configurations
+- `CATGIRL.md` — **Master architecture specification**: 682 lines defining Unity avatar systems, RPG mechanics, monetization via Unity Gaming Services, and complete technical implementation details
+- `UNITY_SETUP_GUIDE.md` — **Concrete implementation guide**: 858 lines with Unity project structure, specific C# class examples (CatgirlController, InventorySystem, UniversalBankingSystem), package dependencies, and build configurations
 - `MCP_SETUP_GUIDE.md` — **Development tooling setup**: 8 essential MCP servers, VS Code configuration, exact `npx`/`uvx` commands
 - `RELIGULOUS_MANTRA.md` — **Development philosophy & conventions**: Contains the "Sacred Laws" with emoji-coded CI/CD patterns, build command specifications, and the unique cultural context
 - `CONTAINER_ORGANIZATION.md` — **Deployment standards**: GHCR registry patterns, trademark compliance, container labeling
@@ -173,9 +173,9 @@ docker build --tag ghcr.io/bambisleepchat/bambisleep-church:latest .
 
 ```
 Assets/Scripts/
-├── Character/CatgirlController.cs     # ✅ 261 lines - Full NetworkBehaviour with pink auras, purring, cow powers
-├── Economy/InventorySystem.cs         # ✅ Unity Gaming Services integration
-├── Economy/UniversalBankingSystem.cs  # ✅ Gambling + auction + multi-currency systems
+├── Character/CatgirlController.cs     # ✅ 260 lines - Full NetworkBehaviour with pink auras, purring, cow powers
+├── Economy/InventorySystem.cs         # ✅ 298 lines - Unity Gaming Services integration
+├── Economy/UniversalBankingSystem.cs  # ✅ 335 lines - Gambling + auction + multi-currency systems
 ├── UI/                                # 📋 Planned: InventoryUI.cs with UI Toolkit
 └── Networking/                        # 📋 Planned: CatgirlNetworkManager.cs
 ```
@@ -231,15 +231,15 @@ AnalyticsService.Instance.StartDataCollection();
 
 **What Exists** (per `DEVELOPMENT_SETUP_COMPLETE.md`):
 
-- ✅ Complete architectural specifications (683-line CATGIRL.md, 859-line UNITY_SETUP_GUIDE.md)
+- ✅ Complete architectural specifications (682-line CATGIRL.md, 858-line UNITY_SETUP_GUIDE.md)
 - ✅ `package.json` with Node.js 20+ dependencies and Volta configuration
 - ✅ Working Dockerfile with proper GHCR labels and MCP environment
 - ✅ `setup-mcp.sh` script for automated MCP server installation
 - ✅ `mcp-validate.sh` script with tests for all 8 MCP servers
 - ✅ VS Code MCP configuration templates (see MCP_SETUP_GUIDE.md)
 - ✅ Unity 6.2 LTS project structure (`catgirl-avatar-project/`)
-- ✅ CatgirlController.cs (261 lines) - Full pink aura system, purring cycles, cow powers
-- ✅ InventorySystem.cs and UniversalBankingSystem.cs implementations
+- ✅ CatgirlController.cs (260 lines) - Full pink aura system, purring cycles, cow powers
+- ✅ InventorySystem.cs (298 lines) and UniversalBankingSystem.cs (335 lines) implementations
 - ✅ GitHub Actions CI/CD pipelines (`.github/workflows/container-build.yml`, `build.yml`)
 - ✅ Container registry: `ghcr.io/bambisleepchat/bambisleep-catgirl-church`
 
@@ -455,7 +455,7 @@ docker run --rm bambisleep-church uv --version
 - The Unity Assets/Scripts/ structure in UNITY_SETUP_GUIDE.md is **implementation blueprint**, not wishful thinking
 - Code examples in markdown files are **canonical implementations** to copy, not suggestions
 - When asked to "create Unity class X", extract the complete implementation from UNITY_SETUP_GUIDE.md
-- The 859-line UNITY_SETUP_GUIDE.md contains actual C# code that should be used verbatim
+- The 858-line UNITY_SETUP_GUIDE.md contains actual C# code that should be used verbatim
 
 **Testing & Verification Workflow**:
 
@@ -480,8 +480,8 @@ grep -r "BambiSleep™" --include="*.md" --include="*.json" .
 
 **Common Misunderstandings to Avoid**:
 
-- ❌ "Let me create a basic CatgirlController" → ✅ Extract the 150+ line implementation from UNITY_SETUP_GUIDE.md
-- ❌ "The Unity project doesn't exist yet, so I'll skip that" → ✅ Create it using exact structure from docs
+- ❌ "Let me create a basic CatgirlController" → ✅ Use existing 260-line implementation or extract from UNITY_SETUP_GUIDE.md
+- ❌ "The Unity project doesn't exist yet, so I'll skip that" → ✅ It exists with 893 lines of C# code across 3 files
 - ❌ "I'll improve the emoji usage" → ✅ Match existing documentation density exactly
 - ❌ "Let me add some helpful Unity packages" → ✅ Only use packages listed in Packages/manifest.json spec
 - ❌ "The docs are aspirational, let me simplify" → ✅ The docs ARE the implementation - use them fully
@@ -489,7 +489,8 @@ grep -r "BambiSleep™" --include="*.md" --include="*.json" .
 **Development Workflow Reality Check**:
 
 - ✅ Unity project DOES exist at `catgirl-avatar-project/` with real C# code
-- ✅ CatgirlController.cs is 261 lines of actual implementation (not a stub)
+- ✅ CatgirlController.cs is 260 lines of actual implementation (not a stub)
+- ✅ InventorySystem.cs (298 lines) and UniversalBankingSystem.cs (335 lines) are complete
 - ✅ GitHub Actions workflows are live and functional
 - ✅ MCP validation runs automatically on CI
 - ✅ Container builds deploy to GHCR on every push to main
