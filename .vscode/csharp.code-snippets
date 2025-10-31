@@ -1,6 +1,6 @@
 {
   // Unity C# Code Snippets for BambiSleep™ CatGirl Avatar System
-  
+
   "MonoBehaviour Class": {
     "prefix": "mbc",
     "body": [
@@ -30,7 +30,7 @@
     ],
     "description": "Create a MonoBehaviour class with standard Unity lifecycle methods"
   },
-  
+
   "NetworkBehaviour Class": {
     "prefix": "nbc",
     "body": [
@@ -58,7 +58,7 @@
     ],
     "description": "Create a NetworkBehaviour class for multiplayer"
   },
-  
+
   "SerializeField": {
     "prefix": "sf",
     "body": [
@@ -66,7 +66,7 @@
     ],
     "description": "Create a SerializeField for Unity Inspector"
   },
-  
+
   "Header Attribute": {
     "prefix": "hdr",
     "body": [
@@ -75,7 +75,7 @@
     ],
     "description": "Add a header in Unity Inspector"
   },
-  
+
   "Tooltip Attribute": {
     "prefix": "tt",
     "body": [
@@ -84,7 +84,7 @@
     ],
     "description": "Add a tooltip for Unity Inspector field"
   },
-  
+
   "RequireComponent": {
     "prefix": "rc",
     "body": [
@@ -93,7 +93,7 @@
     ],
     "description": "Require a component on GameObject"
   },
-  
+
   "Coroutine": {
     "prefix": "cor",
     "body": [
@@ -106,7 +106,7 @@
     ],
     "description": "Create a Unity coroutine"
   },
-  
+
   "Start Coroutine": {
     "prefix": "stc",
     "body": [
@@ -114,7 +114,7 @@
     ],
     "description": "Start a coroutine"
   },
-  
+
   "Debug Log": {
     "prefix": "dbg",
     "body": [
@@ -122,7 +122,7 @@
     ],
     "description": "Debug log with interpolation"
   },
-  
+
   "GetComponent": {
     "prefix": "gc",
     "body": [
@@ -130,7 +130,7 @@
     ],
     "description": "Get a component"
   },
-  
+
   "TryGetComponent": {
     "prefix": "tgc",
     "body": [
@@ -142,7 +142,7 @@
     ],
     "description": "Try get component safely"
   },
-  
+
   "Unity Event Function": {
     "prefix": "uef",
     "body": [
@@ -154,7 +154,7 @@
     ],
     "description": "Create a Unity event function"
   },
-  
+
   "Singleton Pattern": {
     "prefix": "singleton",
     "body": [
@@ -178,7 +178,7 @@
     ],
     "description": "Create a singleton MonoBehaviour"
   },
-  
+
   "ScriptableObject": {
     "prefix": "so",
     "body": [
@@ -196,7 +196,7 @@
     ],
     "description": "Create a ScriptableObject"
   },
-  
+
   "Unity Gaming Services": {
     "prefix": "ugs",
     "body": [
@@ -233,7 +233,7 @@
     ],
     "description": "Create Unity Gaming Services initialization"
   },
-  
+
   "Network Variable": {
     "prefix": "nv",
     "body": [
@@ -241,7 +241,7 @@
     ],
     "description": "Create a NetworkVariable for Netcode"
   },
-  
+
   "Server RPC": {
     "prefix": "srpc",
     "body": [
@@ -254,7 +254,7 @@
     ],
     "description": "Create a ServerRpc method"
   },
-  
+
   "Client RPC": {
     "prefix": "crpc",
     "body": [
@@ -267,7 +267,7 @@
     ],
     "description": "Create a ClientRpc method"
   },
-  
+
   "BambiSleep Trademark": {
     "prefix": "bst",
     "body": [

@@ -1,19 +1,19 @@
 {
   // Unity C# Development Settings for BambiSleep™ CatGirl Avatar System
-  
+
   // ===== C# Language Settings =====
   "dotnet.defaultSolution": "catgirl-avatar-project/catgirl-avatar.sln",
   "omnisharp.enableRoslynAnalyzers": true,
   "omnisharp.enableEditorConfigSupport": true,
   "omnisharp.useModernNet": true,
   "omnisharp.organizeImportsOnFormat": true,
-  
+
   // ===== Unity Specific Settings =====
   "unity.generateAll": true,
   "unity.enableMSBuildProjectSupport": true,
   "unity.codeCompletion": "Unity",
   "unity.symbolLoadTimeout": 60000,
-  
+
   // ===== File Associations for Unity =====
   "files.associations": {
     "*.shader": "shaderlab",
@@ -25,7 +25,7 @@
     "*.asmdef": "json",
     "*.asmref": "json"
   },
-  
+
   // ===== File Exclusions for Better Performance =====
   "files.exclude": {
     "**/.git": true,
@@ -49,7 +49,7 @@
     "**/*.opendb": true,
     "**/*.VC.db": true
   },
-  
+
   // ===== Search Exclusions =====
   "search.exclude": {
     "**/node_modules": true,
@@ -59,7 +59,7 @@
     "**/obj": true,
     "**/*.meta": true
   },
-  
+
   // ===== C# Formatting =====
   "editor.formatOnSave": true,
   "editor.formatOnPaste": false,
@@ -75,7 +75,7 @@
       "source.organizeImports": "explicit"
     }
   },
-  
+
   // ===== IntelliSense Settings =====
   "editor.quickSuggestions": {
     "other": true,
@@ -85,7 +85,7 @@
   "editor.suggestSelection": "first",
   "editor.acceptSuggestionOnCommitCharacter": true,
   "editor.acceptSuggestionOnEnter": "on",
-  
+
   // ===== Diagnostic Settings =====
   "csharp.inlayHints.parameters.enabled": true,
   "csharp.inlayHints.parameters.forLiteralParameters": true,
@@ -95,20 +95,20 @@
   "csharp.inlayHints.parameters.suppressForParametersThatDifferOnlyBySuffix": false,
   "csharp.inlayHints.parameters.suppressForParametersThatMatchMethodIntent": false,
   "csharp.inlayHints.parameters.suppressForParametersThatMatchArgumentName": false,
-  
+
   // ===== Code Lens =====
   "csharp.referencesCodeLens.enabled": true,
   "csharp.referencesCodeLens.filteredSymbols": [],
-  
+
   // ===== Terminal Settings for Unity =====
   "terminal.integrated.env.linux": {
     "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
   },
-  
+
   // ===== Git Settings =====
   "git.ignoreLimitWarning": true,
   "git.mergeEditor": true,
-  
+
   // ===== Pink Theme Settings for BambiSleep™ Aesthetic =====
   "workbench.colorCustomizations": {
     "editor.lineHighlightBackground": "#ff69b420",
@@ -118,7 +118,7 @@
     "editorBracketHighlight.foreground2": "#ff1493",
     "editorBracketHighlight.foreground3": "#c71585"
   },
-  
+
   // ===== Editor Settings =====
   "editor.minimap.enabled": true,
   "editor.minimap.renderCharacters": false,
@@ -127,7 +127,7 @@
   "editor.rulers": [120],
   "editor.wordWrap": "off",
   "editor.renderWhitespace": "boundary",
-  
+
   // ===== File Watching =====
   "files.watcherExclude": {
     "**/.git/objects/**": true,
@@ -137,10 +137,10 @@
     "**/Temp/**": true,
     "**/obj/**": true
   },
-  
+
   // ===== Extension Settings =====
   "extensions.ignoreRecommendations": false,
-  
+
   // ===== Task Settings =====
   "tasks.problemMatchers.neverPrompt": {
     "shell": false

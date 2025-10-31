@@ -6,26 +6,26 @@
     "ms-dotnettools.csharp",
     "ms-dotnettools.csdevkit",
     "ms-dotnettools.vscodeintellicode-csharp",
-    
+
     // Unity Integration
     "visualstudiotoolsforunity.vstuc",
-    
+
     // AI Coding Assistants (already installed)
     "github.copilot",
     "github.copilot-chat",
-    
+
     // Code Quality
     "formulahendry.code-runner",
-    
+
     // Git Integration
     "eamodio.gitlens",
-    
+
     // Docker (for container deployment)
     "ms-azuretools.vscode-docker",
-    
+
     // Shader Development
     "litefeel.shaderlabformatter",
-    
+
     // Additional Productivity
     "streetsidesoftware.code-spell-checker"
   ],
