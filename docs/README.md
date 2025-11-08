@@ -2,6 +2,20 @@
 
 Welcome to the comprehensive documentation for the BambiSleep™ Church CatGirl Avatar System!
 
+---
+
+## 🚀 START HERE: Unified Knowledge Base
+
+### **[📖 UNIFIED_CATGIRL_KNOWLEDGE_BASE.md](UNIFIED_CATGIRL_KNOWLEDGE_BASE.md)** (10,000+ lines)
+
+**Complete reference** merging Unity Avatar + MCP Control Tower systems:
+- All architecture patterns, testing, debugging in ONE document
+- Production-ready patterns for immediate productivity
+- Comprehensive single-source truth
+- **Recommended for AI agents** - zero ramp-up time
+
+---
+
 ## 📚 Documentation Structure
 
 ### 🏗️ Architecture

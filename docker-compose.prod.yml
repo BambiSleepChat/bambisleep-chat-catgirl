@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # BambiSleep™ Chat Catgirl Node.js Application
+  catgirl-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bambisleep-chat-catgirl
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - UNITY_BRIDGE_ENABLED=true
+      - MCP_SERVERS_ENABLED=true
+      - LOG_LEVEL=info
+    ports:
+      - "3000:3000"
+      - "3001:3001"  # WebSocket port
+    volumes:
+      - ./logs:/app/logs
+      - ./mcp-servers:/app/mcp-servers:ro
+      - unity-builds:/app/unity-builds:ro
+    networks:
+      - bambisleep-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - redis
+      - postgres
+
+  # Redis for session management and caching
+  redis:
+    image: redis:7-alpine
+    container_name: bambisleep-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - bambisleep-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # PostgreSQL for analytics and user data
+  postgres:
+    image: postgres:16-alpine
+    container_name: bambisleep-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=bambisleep_chat
+      - POSTGRES_USER=bambisleep
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - bambisleep-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bambisleep"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: bambisleep-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./public:/usr/share/nginx/html:ro
+    networks:
+      - bambisleep-network
+    depends_on:
+      - catgirl-app
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MCP Server Orchestrator (Control Tower)
+  control-tower:
+    build:
+      context: ../bambisleep-church-catgirl-control-tower
+      dockerfile: Dockerfile
+    container_name: bambisleep-control-tower
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - MCP_LAYER_0_ENABLED=true
+      - MCP_LAYER_1_ENABLED=true
+      - MCP_LAYER_2_ENABLED=true
+      - CUSTOM_MCP_SERVERS_ENABLED=true
+    volumes:
+      - ./mcp-servers:/app/custom-mcp-servers:ro
+    networks:
+      - bambisleep-network
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  unity-builds:
+    driver: local
+
+networks:
+  bambisleep-network:
+    driver: bridge

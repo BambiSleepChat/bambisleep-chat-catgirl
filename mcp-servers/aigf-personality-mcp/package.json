@@ -1,0 +1,45 @@
+{
+  "name": "@bambisleep/aigf-personality-mcp",
+  "version": "1.0.0",
+  "description": "AI Girlfriend Personality Management MCP Server",
+  "type": "commonjs",
+  "main": "index.js",
+  "bin": {
+    "aigf-personality-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+    "lint": "eslint .",
+    "validate": "node scripts/validate-server.js"
+  },
+  "keywords": [
+    "mcp",
+    "aigf",
+    "personality",
+    "context-switching",
+    "model-context-protocol"
+  ],
+  "author": "BambiSleepChat",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "mcp": {
+    "version": "2024-11-05",
+    "capabilities": {
+      "resources": true,
+      "tools": true,
+      "prompts": true
+    }
+  }
+}
