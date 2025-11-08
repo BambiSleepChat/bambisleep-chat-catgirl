@@ -101,7 +101,7 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         echo "✅ Application is healthy!"
         break
     fi
-    
+
     RETRY_COUNT=$((RETRY_COUNT + 1))
     echo "   Retry $RETRY_COUNT/$MAX_RETRIES..."
     sleep 2

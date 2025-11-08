@@ -32,7 +32,7 @@ class UserSession {
     this.conversionEvents = data.conversionEvents || [];
     this.metadata = data.metadata || {};
   }
-  
+
   endSession() {
     this.endTime = new Date().toISOString();
     this.duration = Math.floor((new Date(this.endTime) - new Date(this.startTime)) / 1000);
@@ -65,7 +65,7 @@ class UserEngagement {
     this.lastSeen = data.lastSeen || new Date().toISOString();
     this.lifetimeValue = data.lifetimeValue || 0;
   }
-  
+
   updateFromSession(session) {
     this.totalSessions++;
     this.totalDuration += session.duration;
@@ -85,47 +85,47 @@ class AnalyticsManager extends EventEmitter {
     this.conversionEvents = [];
     this.maxHistorySize = 5000;
   }
-  
+
   startSession(userId, metadata = {}) {
     const id = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const session = new UserSession({ id, userId, metadata });
-    
+
     this.activeSessions.set(id, session);
-    
+
     // Initialize user engagement if new user
     if (!this.userEngagement.has(userId)) {
       this.userEngagement.set(userId, new UserEngagement({ userId }));
     }
-    
+
     this.emit('sessionStarted', session);
     return session;
   }
-  
+
   endSession(sessionId) {
     const session = this.activeSessions.get(sessionId);
     if (!session) {
       throw new Error(`Session not found: ${sessionId}`);
     }
-    
+
     session.endSession();
     this.activeSessions.delete(sessionId);
     this.completedSessions.push(session);
-    
+
     // Update user engagement
     const engagement = this.userEngagement.get(session.userId);
     if (engagement) {
       engagement.updateFromSession(session);
     }
-    
+
     // Trim history if too large
     if (this.completedSessions.length > this.maxHistorySize) {
       this.completedSessions.shift();
     }
-    
+
     this.emit('sessionEnded', session);
     return session;
   }
-  
+
   recordConversion(userId, sessionId, eventType, value = 0, metadata = {}) {
     const id = `conversion-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const conversion = new ConversionEvent({
@@ -136,24 +136,24 @@ class AnalyticsManager extends EventEmitter {
       value,
       metadata,
     });
-    
+
     this.conversionEvents.push(conversion);
-    
+
     // Update user lifetime value
     const engagement = this.userEngagement.get(userId);
     if (engagement) {
       engagement.conversions.push(conversion);
       engagement.lifetimeValue += value;
     }
-    
+
     this.emit('conversionRecorded', conversion);
     return conversion;
   }
-  
+
   getAnalytics(timeframe = 'all') {
     const now = new Date();
     let sessions = this.completedSessions;
-    
+
     if (timeframe === '24h') {
       const cutoff = new Date(now - 24 * 60 * 60 * 1000);
       sessions = sessions.filter(s => new Date(s.startTime) > cutoff);
@@ -161,13 +161,13 @@ class AnalyticsManager extends EventEmitter {
       const cutoff = new Date(now - 7 * 24 * 60 * 60 * 1000);
       sessions = sessions.filter(s => new Date(s.startTime) > cutoff);
     }
-    
+
     const totalSessions = sessions.length;
     const totalMessages = sessions.reduce((sum, s) => sum + s.messageCount, 0);
     const totalDuration = sessions.reduce((sum, s) => sum + s.duration, 0);
     const avgSessionDuration = totalSessions > 0 ? totalDuration / totalSessions : 0;
     const avgMessagesPerSession = totalSessions > 0 ? totalMessages / totalSessions : 0;
-    
+
     return {
       timeframe,
       totalSessions,
@@ -246,13 +246,13 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
       mimeType: 'application/json',
     },
   ];
-  
+
   return { resources };
 });
 
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const uri = request.params.uri;
-  
+
   if (uri === 'analytics://sessions/active') {
     const sessions = Array.from(analyticsManager.activeSessions.values());
     return {
@@ -263,7 +263,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   if (uri === 'analytics://sessions/completed') {
     return {
       contents: [{
@@ -273,7 +273,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   if (uri === 'analytics://users/engagement') {
     const engagement = Array.from(analyticsManager.userEngagement.values());
     return {
@@ -284,7 +284,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   if (uri === 'analytics://conversions') {
     return {
       contents: [{
@@ -294,7 +294,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   if (uri === 'analytics://summary') {
     const summary = analyticsManager.getAnalytics('all');
     return {
@@ -305,7 +305,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   throw new Error(`Unknown resource: ${uri}`);
 });
 
@@ -401,11 +401,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  
+
   switch (name) {
     case 'start_session': {
       const session = analyticsManager.startSession(args.userId, args.metadata);
-      
+
       return {
         content: [{
           type: 'text',
@@ -413,10 +413,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'end_session': {
       const session = analyticsManager.endSession(args.sessionId);
-      
+
       return {
         content: [{
           type: 'text',
@@ -424,15 +424,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'record_message': {
       const session = analyticsManager.activeSessions.get(args.sessionId);
       if (!session) {
         throw new Error(`Session not found: ${args.sessionId}`);
       }
-      
+
       session.messageCount++;
-      
+
       return {
         content: [{
           type: 'text',
@@ -440,17 +440,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'record_trigger_activation': {
       const session = analyticsManager.activeSessions.get(args.sessionId);
       if (!session) {
         throw new Error(`Session not found: ${args.sessionId}`);
       }
-      
+
       if (!session.triggersActivated.includes(args.triggerId)) {
         session.triggersActivated.push(args.triggerId);
       }
-      
+
       return {
         content: [{
           type: 'text',
@@ -458,7 +458,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'record_conversion': {
       const conversion = analyticsManager.recordConversion(
         args.userId,
@@ -467,7 +467,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         args.value || 0,
         args.metadata || {}
       );
-      
+
       return {
         content: [{
           type: 'text',
@@ -475,11 +475,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_analytics': {
       const timeframe = args.timeframe || 'all';
       const analytics = analyticsManager.getAnalytics(timeframe);
-      
+
       return {
         content: [{
           type: 'text',
@@ -487,13 +487,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_user_engagement': {
       const engagement = analyticsManager.userEngagement.get(args.userId);
       if (!engagement) {
         throw new Error(`User not found: ${args.userId}`);
       }
-      
+
       return {
         content: [{
           type: 'text',
@@ -501,7 +501,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -511,7 +511,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
+
   //<3 Lore: Server is now ready to track chat analytics
   console.error('BambiSleep.Chat Analytics MCP Server running on stdio');
 }

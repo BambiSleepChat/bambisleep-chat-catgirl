@@ -31,11 +31,11 @@ class AgentAuthority {
     this.created = data.created || new Date().toISOString();
     this.lastActive = data.lastActive || new Date().toISOString();
   }
-  
+
   canAccess(requiredLayer) {
     return this.ringLayer <= requiredLayer;
   }
-  
+
   hasPermission(permission) {
     return this.permissions.includes(permission) || this.role === AgentRole.COMMANDER;
   }
@@ -52,7 +52,7 @@ class AgentCoordinator extends EventEmitter {
     this.commanderId = null;
     this.operationLog = [];
   }
-  
+
   /**
    * Register a new agent in the system
    * @param {string} agentId - Unique agent identifier
@@ -65,26 +65,26 @@ class AgentCoordinator extends EventEmitter {
     if (role === AgentRole.COMMANDER && this.commanderId && this.commanderId !== agentId) {
       throw new Error('Commander already exists. Only one commander allowed.');
     }
-    
+
     const authority = new AgentAuthority({
       agentId,
       role,
       ringLayer,
       permissions: this._getDefaultPermissions(role),
     });
-    
+
     this.agents.set(agentId, authority);
-    
+
     if (role === AgentRole.COMMANDER) {
       this.commanderId = agentId;
     }
-    
+
     this.emit('agentRegistered', authority);
     this._logOperation(agentId, 'register', { role, ringLayer });
-    
+
     return authority;
   }
-  
+
   /**
    * Assign ring layer access to an agent (commander only)
    * @param {string} commanderId - Commander agent ID
@@ -97,32 +97,32 @@ class AgentCoordinator extends EventEmitter {
     if (!commander || commander.role !== AgentRole.COMMANDER) {
       throw new Error('Only commander can assign ring layers');
     }
-    
+
     const targetAgent = this.agents.get(targetAgentId);
     if (!targetAgent) {
       throw new Error(`Agent not found: ${targetAgentId}`);
     }
-    
+
     const previousLayer = targetAgent.ringLayer;
     targetAgent.ringLayer = ringLayer;
     targetAgent.lastActive = new Date().toISOString();
-    
+
     this.emit('ringLayerAssigned', {
       commanderId,
       targetAgentId,
       previousLayer,
       newLayer: ringLayer,
     });
-    
+
     this._logOperation(commanderId, 'assignRingLayer', {
       targetAgentId,
       previousLayer,
       newLayer: ringLayer,
     });
-    
+
     return targetAgent;
   }
-  
+
   /**
    * Check if an agent has authority to perform an operation
    * @param {string} agentId - Agent requesting operation
@@ -135,13 +135,13 @@ class AgentCoordinator extends EventEmitter {
     if (!agent) {
       return false;
     }
-    
+
     const layerAccess = agent.canAccess(requiredLayer);
     const permissionAccess = permission ? agent.hasPermission(permission) : true;
-    
+
     return layerAccess && permissionAccess;
   }
-  
+
   /**
    * Grant permission to an agent (commander only)
    * @param {string} commanderId - Commander agent ID
@@ -154,30 +154,30 @@ class AgentCoordinator extends EventEmitter {
     if (!commander || commander.role !== AgentRole.COMMANDER) {
       throw new Error('Only commander can grant permissions');
     }
-    
+
     const targetAgent = this.agents.get(targetAgentId);
     if (!targetAgent) {
       throw new Error(`Agent not found: ${targetAgentId}`);
     }
-    
+
     if (!targetAgent.permissions.includes(permission)) {
       targetAgent.permissions.push(permission);
     }
-    
+
     this.emit('permissionGranted', {
       commanderId,
       targetAgentId,
       permission,
     });
-    
+
     this._logOperation(commanderId, 'grantPermission', {
       targetAgentId,
       permission,
     });
-    
+
     return targetAgent;
   }
-  
+
   /**
    * Get all agents in the system
    * @returns {Array<AgentAuthority>} Array of agent authorities
@@ -185,7 +185,7 @@ class AgentCoordinator extends EventEmitter {
   getAllAgents() {
     return Array.from(this.agents.values());
   }
-  
+
   /**
    * Get agents by role
    * @param {string} role - Agent role to filter by
@@ -194,7 +194,7 @@ class AgentCoordinator extends EventEmitter {
   getAgentsByRole(role) {
     return Array.from(this.agents.values()).filter(agent => agent.role === role);
   }
-  
+
   /**
    * Get agents by ring layer
    * @param {number} ringLayer - Ring layer to filter by
@@ -203,7 +203,7 @@ class AgentCoordinator extends EventEmitter {
   getAgentsByRingLayer(ringLayer) {
     return Array.from(this.agents.values()).filter(agent => agent.ringLayer === ringLayer);
   }
-  
+
   /**
    * Get operation log
    * @param {number} limit - Maximum number of logs to return
@@ -212,7 +212,7 @@ class AgentCoordinator extends EventEmitter {
   getOperationLog(limit = 100) {
     return this.operationLog.slice(-limit);
   }
-  
+
   /**
    * Default permissions based on role
    * @private
@@ -231,7 +231,7 @@ class AgentCoordinator extends EventEmitter {
         return ['read'];
     }
   }
-  
+
   /**
    * Log operation for audit trail
    * @private
@@ -243,7 +243,7 @@ class AgentCoordinator extends EventEmitter {
       operation,
       details,
     });
-    
+
     // Keep log size manageable
     if (this.operationLog.length > 10000) {
       this.operationLog.shift();

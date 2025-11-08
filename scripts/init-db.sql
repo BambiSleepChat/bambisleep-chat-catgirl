@@ -108,7 +108,7 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO bambisleep;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO bambisleep;
 
 -- Insert initial data (optional)
-INSERT INTO users (username, email) VALUES 
+INSERT INTO users (username, email) VALUES
     ('system', 'system@bambisleep.chat')
 ON CONFLICT (username) DO NOTHING;
 

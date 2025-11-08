@@ -35,18 +35,18 @@ class PersonalityProfile {
     this.created = data.created || new Date().toISOString();
     this.lastActive = data.lastActive || new Date().toISOString();
   }
-  
+
   updateMood(newMood) {
     this.mood = newMood;
     this.lastActive = new Date().toISOString();
   }
-  
+
   addContext(message) {
     this.contextMemory.push({
       timestamp: new Date().toISOString(),
       content: message,
     });
-    
+
     // Keep only last 50 messages
     if (this.contextMemory.length > 50) {
       this.contextMemory.shift();
@@ -62,58 +62,58 @@ class PersonalityManager extends EventEmitter {
     this.activeProfileId = null;
     this.moodStates = ['happy', 'playful', 'serious', 'caring', 'submissive', 'dominant', 'neutral'];
   }
-  
+
   addProfile(profile) {
     this.profiles.set(profile.id, profile);
     this.emit('profileAdded', profile);
     return profile;
   }
-  
+
   switchProfile(profileId) {
     const profile = this.profiles.get(profileId);
     if (!profile) {
       throw new Error(`Profile not found: ${profileId}`);
     }
-    
+
     const previousId = this.activeProfileId;
     this.activeProfileId = profileId;
     profile.lastActive = new Date().toISOString();
-    
+
     this.emit('profileSwitched', {
       previous: previousId,
       current: profileId,
       profile,
     });
-    
+
     return profile;
   }
-  
+
   getActiveProfile() {
     if (!this.activeProfileId) {
       return null;
     }
     return this.profiles.get(this.activeProfileId);
   }
-  
+
   updateMood(profileId, mood) {
     const profile = this.profiles.get(profileId);
     if (!profile) {
       throw new Error(`Profile not found: ${profileId}`);
     }
-    
+
     if (!this.moodStates.includes(mood)) {
       throw new Error(`Invalid mood state: ${mood}`);
     }
-    
+
     const previousMood = profile.mood;
     profile.updateMood(mood);
-    
+
     this.emit('moodChanged', {
       profileId,
       previousMood,
       newMood: mood,
     });
-    
+
     return profile;
   }
 }
@@ -148,7 +148,7 @@ const server = new Server(
 /// Law: Resource handlers - expose personality profiles
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   const resources = [];
-  
+
   // Active profile resource
   const activeProfile = personalityManager.getActiveProfile();
   if (activeProfile) {
@@ -159,7 +159,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
       mimeType: 'application/json',
     });
   }
-  
+
   // All profiles
   for (const [id, profile] of personalityManager.profiles.entries()) {
     resources.push({
@@ -169,13 +169,13 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
       mimeType: 'application/json',
     });
   }
-  
+
   return { resources };
 });
 
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const uri = request.params.uri;
-  
+
   if (uri === 'aigf://profile/active') {
     const profile = personalityManager.getActiveProfile();
     if (!profile) {
@@ -189,7 +189,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   const profileMatch = uri.match(/^aigf:\/\/profiles\/(.+)$/);
   if (profileMatch) {
     const profileId = profileMatch[1];
@@ -205,7 +205,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   throw new Error(`Unknown resource: ${uri}`);
 });
 
@@ -287,13 +287,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  
+
   switch (name) {
     case 'create_personality': {
       const id = `profile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const profile = new PersonalityProfile({ id, ...args });
       personalityManager.addProfile(profile);
-      
+
       return {
         content: [{
           type: 'text',
@@ -301,10 +301,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'switch_personality': {
       const profile = personalityManager.switchProfile(args.profileId);
-      
+
       return {
         content: [{
           type: 'text',
@@ -312,10 +312,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'update_mood': {
       const profile = personalityManager.updateMood(args.profileId, args.mood);
-      
+
       return {
         content: [{
           type: 'text',
@@ -323,15 +323,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'add_context': {
       const profile = personalityManager.getActiveProfile();
       if (!profile) {
         throw new Error('No active profile');
       }
-      
+
       profile.addContext(args.message);
-      
+
       return {
         content: [{
           type: 'text',
@@ -339,15 +339,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_trigger_response': {
       const profile = personalityManager.profiles.get(args.profileId);
       if (!profile) {
         throw new Error(`Profile not found: ${args.profileId}`);
       }
-      
+
       const response = profile.triggerResponses[args.trigger] || null;
-      
+
       return {
         content: [{
           type: 'text',
@@ -355,11 +355,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'list_profiles': {
       const profiles = Array.from(personalityManager.profiles.values());
       const activeId = personalityManager.activeProfileId;
-      
+
       return {
         content: [{
           type: 'text',
@@ -367,7 +367,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -406,11 +406,11 @@ server.setRequestHandler(ListPromptsRequestSchema, async () => {
 server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
   const profile = personalityManager.getActiveProfile();
-  
+
   if (!profile) {
     throw new Error('No active personality profile');
   }
-  
+
   switch (name) {
     case 'personality_greeting': {
       const userName = args?.userName || 'there';
@@ -418,7 +418,7 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
 Generate a greeting for ${userName} in this personality's style.
 Traits: ${profile.traits.join(', ')}
 Conversational style: ${profile.conversationalStyle}`;
-      
+
       return {
         messages: [
           {
@@ -431,7 +431,7 @@ Conversational style: ${profile.conversationalStyle}`;
         ],
       };
     }
-    
+
     case 'personality_response': {
       const recentContext = profile.contextMemory.slice(-5).map(c => c.content).join('\n');
       const prompt = `[Personality: ${profile.name} (${profile.archetype}, ${profile.mood})]
@@ -440,7 +440,7 @@ Traits: ${profile.traits.join(', ')}
 Conversational style: ${profile.conversationalStyle}
 Recent context:
 ${recentContext}`;
-      
+
       return {
         messages: [
           {
@@ -453,7 +453,7 @@ ${recentContext}`;
         ],
       };
     }
-    
+
     default:
       throw new Error(`Unknown prompt: ${name}`);
   }
@@ -463,7 +463,7 @@ ${recentContext}`;
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
+
   //<3 Lore: Server is now ready to manage AI girlfriend personalities
   console.error('AIGF Personality MCP Server running on stdio');
 }

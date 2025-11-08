@@ -70,7 +70,7 @@ const server = new Server(
 /// Law: Resource handlers - expose audio library and playlists
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   const resources = [];
-  
+
   // Audio library resource
   resources.push({
     uri: 'bambisleep://audio/library',
@@ -78,7 +78,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
     description: 'Complete BambiSleep™ audio file collection',
     mimeType: 'application/json',
   });
-  
+
   // Individual playlists
   for (const [id, playlist] of playlists.entries()) {
     resources.push({
@@ -88,13 +88,13 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
       mimeType: 'application/json',
     });
   }
-  
+
   return { resources };
 });
 
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const uri = request.params.uri;
-  
+
   if (uri === 'bambisleep://audio/library') {
     const library = Array.from(audioLibrary.values());
     return {
@@ -105,7 +105,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   const playlistMatch = uri.match(/^bambisleep:\/\/playlists\/(.+)$/);
   if (playlistMatch) {
     const playlistId = playlistMatch[1];
@@ -121,7 +121,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   throw new Error(`Unknown resource: ${uri}`);
 });
 
@@ -196,13 +196,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  
+
   switch (name) {
     case 'add_audio_file': {
       const id = `audio-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const metadata = new AudioMetadata({ id, ...args });
       audioLibrary.set(id, metadata);
-      
+
       return {
         content: [{
           type: 'text',
@@ -210,28 +210,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'search_audio': {
       let results = Array.from(audioLibrary.values());
-      
+
       if (args.trigger) {
-        results = results.filter(audio => 
+        results = results.filter(audio =>
           audio.triggers.some(t => t.toLowerCase().includes(args.trigger.toLowerCase()))
         );
       }
-      
+
       if (args.series) {
-        results = results.filter(audio => 
+        results = results.filter(audio =>
           audio.series.toLowerCase().includes(args.series.toLowerCase())
         );
       }
-      
+
       if (args.tags && args.tags.length > 0) {
-        results = results.filter(audio => 
+        results = results.filter(audio =>
           args.tags.some(tag => audio.tags.includes(tag))
         );
       }
-      
+
       return {
         content: [{
           type: 'text',
@@ -239,10 +239,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'create_playlist': {
       const id = `playlist-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
+
       // Calculate total duration
       let totalDuration = 0;
       for (const trackId of args.trackIds) {
@@ -251,7 +251,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           totalDuration += audio.duration;
         }
       }
-      
+
       const playlist = new Playlist({
         id,
         name: args.name,
@@ -259,9 +259,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         duration: totalDuration,
         description: args.description || '',
       });
-      
+
       playlists.set(id, playlist);
-      
+
       return {
         content: [{
           type: 'text',
@@ -269,16 +269,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_playlist': {
       const playlist = playlists.get(args.playlistId);
       if (!playlist) {
         throw new Error(`Playlist not found: ${args.playlistId}`);
       }
-      
+
       // Hydrate with full track information
       const tracks = playlist.tracks.map(id => audioLibrary.get(id)).filter(Boolean);
-      
+
       return {
         content: [{
           type: 'text',
@@ -286,15 +286,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'list_triggers': {
       const triggersSet = new Set();
       for (const audio of audioLibrary.values()) {
         audio.triggers.forEach(t => triggersSet.add(t));
       }
-      
+
       const triggers = Array.from(triggersSet).sort();
-      
+
       return {
         content: [{
           type: 'text',
@@ -302,7 +302,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -312,7 +312,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
+
   //<3 Lore: Server is now ready to manage BambiSleep™ audio files
   console.error('BambiSleep™ Hypnosis MCP Server running on stdio');
 }

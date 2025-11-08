@@ -36,7 +36,7 @@ class HypnoticTrigger {
     this.lastActivated = data.lastActivated || null;
     this.created = data.created || new Date().toISOString();
   }
-  
+
   activate() {
     this.activationCount++;
     this.lastActivated = new Date().toISOString();
@@ -64,24 +64,24 @@ class TriggerSystem extends EventEmitter {
     this.activeLogs = [];
     this.maxLogSize = 1000;
   }
-  
+
   registerTrigger(trigger) {
     this.triggers.set(trigger.id, trigger);
     this.emit('triggerRegistered', trigger);
     return trigger;
   }
-  
+
   activateTrigger(triggerId, context = {}) {
     const trigger = this.triggers.get(triggerId);
     if (!trigger) {
       throw new Error(`Trigger not found: ${triggerId}`);
     }
-    
+
     //!? Guardrail: Compliance check
     if (trigger.complianceRequired && !context.complianceAcknowledged) {
       throw new Error(`Compliance acknowledgment required for trigger: ${trigger.name}`);
     }
-    
+
     // Check prerequisites
     for (const prereqId of trigger.prerequisites) {
       const prereq = this.triggers.get(prereqId);
@@ -89,9 +89,9 @@ class TriggerSystem extends EventEmitter {
         throw new Error(`Prerequisite not met: ${prereqId}`);
       }
     }
-    
+
     trigger.activate();
-    
+
     const log = new ActivationLog({
       id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       triggerId: trigger.id,
@@ -100,26 +100,26 @@ class TriggerSystem extends EventEmitter {
       context,
       complianceAcknowledged: context.complianceAcknowledged || false,
     });
-    
+
     this.activeLogs.push(log);
-    
+
     // Trim log if too large
     if (this.activeLogs.length > this.maxLogSize) {
       this.activeLogs.shift();
     }
-    
+
     this.emit('triggerActivated', {
       trigger,
       log,
     });
-    
+
     return { trigger, log };
   }
-  
+
   searchTriggers(query) {
     const results = [];
     const lowerQuery = query.toLowerCase();
-    
+
     for (const trigger of this.triggers.values()) {
       if (
         trigger.name.toLowerCase().includes(lowerQuery) ||
@@ -130,14 +130,14 @@ class TriggerSystem extends EventEmitter {
         results.push(trigger);
       }
     }
-    
+
     return results;
   }
-  
+
   getComplianceStats() {
     const total = this.activeLogs.length;
     const compliant = this.activeLogs.filter(log => log.complianceAcknowledged).length;
-    
+
     return {
       totalActivations: total,
       compliantActivations: compliant,
@@ -194,13 +194,13 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
       mimeType: 'application/json',
     },
   ];
-  
+
   return { resources };
 });
 
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const uri = request.params.uri;
-  
+
   if (uri === 'triggers://registry') {
     const registry = Array.from(triggerSystem.triggers.values());
     return {
@@ -211,7 +211,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   if (uri === 'triggers://logs') {
     return {
       contents: [{
@@ -221,7 +221,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   if (uri === 'triggers://compliance') {
     const stats = triggerSystem.getComplianceStats();
     return {
@@ -232,7 +232,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       }],
     };
   }
-  
+
   throw new Error(`Unknown resource: ${uri}`);
 });
 
@@ -319,13 +319,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  
+
   switch (name) {
     case 'register_trigger': {
       const id = `trigger-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const trigger = new HypnoticTrigger({ id, ...args });
       triggerSystem.registerTrigger(trigger);
-      
+
       return {
         content: [{
           type: 'text',
@@ -333,10 +333,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'activate_trigger': {
       const result = triggerSystem.activateTrigger(args.triggerId, args);
-      
+
       return {
         content: [{
           type: 'text',
@@ -344,10 +344,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'search_triggers': {
       const results = triggerSystem.searchTriggers(args.query);
-      
+
       return {
         content: [{
           type: 'text',
@@ -355,13 +355,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_trigger': {
       const trigger = triggerSystem.triggers.get(args.triggerId);
       if (!trigger) {
         throw new Error(`Trigger not found: ${args.triggerId}`);
       }
-      
+
       return {
         content: [{
           type: 'text',
@@ -369,13 +369,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_activation_history': {
       const limit = args.limit || 50;
       const logs = triggerSystem.activeLogs
         .filter(log => log.triggerId === args.triggerId)
         .slice(-limit);
-      
+
       return {
         content: [{
           type: 'text',
@@ -383,10 +383,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     case 'get_compliance_stats': {
       const stats = triggerSystem.getComplianceStats();
-      
+
       return {
         content: [{
           type: 'text',
@@ -394,7 +394,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }],
       };
     }
-    
+
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -404,7 +404,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
+
   //<3 Lore: Server is now ready to manage hypnotic triggers
   console.error('BambiSleep™ Trigger System MCP Server running on stdio');
 }
